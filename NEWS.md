@@ -7,3 +7,4 @@ TODO:
    * rerun analysis
    * readme
    * readme example
+   * diagnostic plots function, # clusters and confusion metrics
