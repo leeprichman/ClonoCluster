@@ -1,0 +1,38 @@
+Package: BarCluster
+Title: Lineage informed scRNAseq clustering
+Version: 0.0.1
+Authors@R:
+    c(person(given = c("Lee", "P."),
+             family = "Richman",
+             role = c("aut", "cre"),
+             email = "leepr@upenn.edu"),
+      person(given = c("Yogesh"),
+             family = "Goyal",
+             role = "aut",
+             email = "yogesh.goyal@northwestern.edu"),
+      person(given = c("Arjun"),
+             family = "Raj",
+             role = "aut",
+             email = "arjunrajlab@gmail.com"))
+Description: Package to facilitate the integration of barcode assignments with traditional transcriptome based clustering to generate intermediate levels of clustering for analysis.
+License: See LICENSE
+Imports:
+  magrittr,
+  data.table,
+  Seurat,
+  ggplot2,
+  cowplot,
+  scales,
+  purrr,
+  stringr,
+  testthat,
+  stats,
+  uwot,
+  reticulate,
+  irlba,
+  ROCR,
+  ggalluvial,
+  utils
+LinkingTo: Rcpp, RcppEigen, RcppProgress
+RoxygenNote: 7.1.1
+Encoding: UTF-8
