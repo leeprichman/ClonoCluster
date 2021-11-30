@@ -112,7 +112,7 @@ Plot_alluvia_track <- function(dl,
       scale_fill_manual(values = val1) +
       geom_flow(stat = "alluvium", lode.guidance = "frontback",
                 aes(color = init), alpha = flow_alpha) +
-      geom_stratum(color = "black", aes(fill = init), size = 2, alpha = node_alpha) +
+      geom_stratum(color = "black", aes(fill = init), size = border_size, alpha = node_alpha) +
       theme_bw() +
       theme(legend.position = "none",
             plot.title = element_text(hjust = 0.5, face = "bold"),

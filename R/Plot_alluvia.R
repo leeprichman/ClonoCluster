@@ -170,7 +170,7 @@ Plot_alluvia <- function(dl,
       scale_fill_manual(values = val1) +
       geom_flow(stat = "alluvium", lode.guidance = "frontback",
                 aes(color = init), alpha = flow_alpha) +
-      geom_stratum(color = "black", aes(fill = init), size = 2, alpha = node_alpha) +
+      geom_stratum(color = "black", aes(fill = init), size = border_size, alpha = node_alpha) +
       theme_bw() +
       theme(legend.position = "none",
             plot.title = element_text(hjust = 0.5, face = "bold"),
@@ -187,7 +187,7 @@ Plot_alluvia <- function(dl,
       color = NA, fill = rt$initcol, alpha = node_alpha) +
       annotate("rect",
       xmin = rt2$xmin, xmax = rt2$xmax, ymax = rt2$ymax, ymin = rt2$ymin,
-      color = "black", fill = NA, size = 2)
+      color = "black", fill = NA, size = border_size)
 
       if (label_nodes) p <- p +
       annotate(ltype,
@@ -204,7 +204,7 @@ Plot_alluvia <- function(dl,
         scale_fill_manual(values = val2) +
         geom_flow(stat = "alluvium", lode.guidance = "frontback",
                   aes(color = final), alpha = flow_alpha) +
-        geom_stratum(color = "black", aes(fill = final), size = 2, alpha = node_alpha) +
+        geom_stratum(color = "black", aes(fill = final), size = border_size, alpha = node_alpha) +
         theme_bw() +
         theme(legend.position = "none",
               plot.title = element_text(hjust = 0.5, face = "bold"),
