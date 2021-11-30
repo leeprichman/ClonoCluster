@@ -12,6 +12,7 @@ Plot_alluvia_track(
   ylab = "",
   flow_alpha = 0.2,
   node_alpha = 1,
+  border_size = 2,
   label_nodes = TRUE,
   label_size = 2,
   ltype = "text",
@@ -32,6 +33,8 @@ Plot_alluvia_track(
 \item{flow_alpha}{Numeric. Alpha value for the alluvial ribbons.}
 
 \item{node_alpha}{Numeric. Alpha value for the strata, passed to geom_rect.}
+
+\item{border_size}{Numeric. Rectangle thickness around the sankey nodes. Default 2.}
 
 \item{label_nodes}{Boolean. Should clusters be labeled with geom_label? Default TRUE.}
 

@@ -13,6 +13,7 @@ Plot_alluvia(
   flow_alpha = 0.2,
   node_alpha = 1,
   stack_colors = TRUE,
+  border_size = 2,
   label_nodes = TRUE,
   label_size = 2,
   ltype = "label",
@@ -36,6 +37,8 @@ Plot_alluvia(
 \item{node_alpha}{Numeric. Alpha value for the strata, passed to geom_rect.}
 
 \item{stack_colors}{Boolean. Should nodes be represented as stacked colors representing the contributing alluvia? Default TRUE.}
+
+\item{border_size}{Numeric. Rectangle thickness around the sankey nodes. Default 2.}
 
 \item{label_nodes}{Boolean. Should clusters be labeled with geom_label? Default TRUE.}
 

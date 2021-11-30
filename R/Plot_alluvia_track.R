@@ -9,6 +9,7 @@
 #' @param ylab Character. Passed to `ylab`.
 #' @param flow_alpha Numeric. Alpha value for the alluvial ribbons.
 #' @param node_alpha Numeric. Alpha value for the strata, passed to geom_rect.
+#' @param border_size Numeric. Rectangle thickness around the sankey nodes. Default 2.
 #' @param label_nodes Boolean. Should clusters be labeled with geom_label? Default TRUE.
 #' @param label_size Numeric. size of geom_text labels font.
 #' @param ltype One of c("label", "text"). Passed as the geom to annotation. Default is "label"
@@ -24,6 +25,7 @@ Plot_alluvia_track <- function(dl,
                         ylab = "",
                         flow_alpha = 0.2,
                         node_alpha = 1,
+                        border_size = 2,
                         label_nodes = TRUE,
                         label_size = 2,
                         ltype = "text",
@@ -127,7 +129,7 @@ Plot_alluvia_track <- function(dl,
       color = NA, fill = rt$initcol, alpha = node_alpha) +
       annotate("rect",
       xmin = rt2$xmin, xmax = rt2$xmax, ymax = rt2$ymax, ymin = rt2$ymin,
-      color = "black", fill = NA, size = 2)
+      color = "black", fill = NA, size = border_size)
 
       if (label_nodes) p <- p +
       annotate(ltype,

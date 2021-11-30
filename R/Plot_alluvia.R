@@ -10,6 +10,7 @@
 #' @param flow_alpha Numeric. Alpha value for the alluvial ribbons.
 #' @param node_alpha Numeric. Alpha value for the strata, passed to geom_rect.
 #' @param stack_colors Boolean. Should nodes be represented as stacked colors representing the contributing alluvia? Default TRUE.
+#' @param border_size Numeric. Rectangle thickness around the sankey nodes. Default 2.
 #' @param label_nodes Boolean. Should clusters be labeled with geom_label? Default TRUE.
 #' @param label_size Numeric. size of geom_text labels font.
 #' @param ltype One of c("label", "text"). Passed as the geom to annotation. Default is "label"
@@ -27,6 +28,7 @@ Plot_alluvia <- function(dl,
                         flow_alpha = 0.2,
                         node_alpha = 1,
                         stack_colors = TRUE,
+                        border_size = 2,
                         label_nodes = TRUE,
                         label_size = 2,
                         ltype = "label",
@@ -219,7 +221,7 @@ Plot_alluvia <- function(dl,
         color = NA, fill = rtr$finalcol, alpha = node_alpha) +
         annotate("rect",
         xmin = rt2r$xmin, xmax = rt2r$xmax, ymax = rt2r$ymax, ymin = rt2r$ymin,
-        color = "black", fill = NA, size = 2)
+        color = "black", fill = NA, size = border_size)
 
         if (label_nodes) p2 <- p2 +
         annotate(ltype,
