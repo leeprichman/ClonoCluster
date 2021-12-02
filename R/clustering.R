@@ -38,7 +38,7 @@ RunModularityClustering <- function(
 RunModularityClusteringCpp <- function(SNN, modularityFunction, resolution,
   algorithm, nRandomStarts, nIterations, randomSeed, printOutput,
   edgefilename) {
-    .Call('_Barcluster_RunModularityClusteringCpp', PACKAGE = 'BarCluster', SNN,
+    .Call('_Seurat_RunModularityClusteringCpp', PACKAGE = 'Seurat', SNN,
     modularityFunction, resolution, algorithm, nRandomStarts, nIterations,
     randomSeed, printOutput, edgefilename)
 }
