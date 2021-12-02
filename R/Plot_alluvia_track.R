@@ -95,7 +95,7 @@ Plot_alluvia_track <- function(dl,
 
     v <- rt$init %>% unique %>% sort
 
-    names(v) <- c(cols[1:(length(v) - 1)], "grey")
+    names(v) <- c("grey", cols[1:(length(v) - 1)])
 
     rt[, initcol := names(v)[which(v == init)] %>% unique, by = "init"]
 
