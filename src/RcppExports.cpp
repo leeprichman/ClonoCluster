@@ -31,11 +31,8 @@ BEGIN_RCPP
 END_RCPP
 }
 
-RcppExport SEXP _Seurat_RunModularityClusteringCpp(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-
 static const R_CallMethodDef CallEntries[] = {
     {"_BarCluster_RunModularityClusteringCpp", (DL_FUNC) &_BarCluster_RunModularityClusteringCpp, 9},
-    {"_Seurat_RunModularityClusteringCpp", (DL_FUNC) &_Seurat_RunModularityClusteringCpp, 9},
     {NULL, NULL, 0}
 };
 
