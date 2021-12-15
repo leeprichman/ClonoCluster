@@ -3,7 +3,8 @@
 #'
 #' @param dl A data table, with three columns, c("rn", "Group", "alpha").
 #' @param ids List. A list of character vectors containing rownames in dl (cellIDs) for each group to be tracked.
-#' @param cols Character. Vector of colors values of length equal to the number of groups to be tracked.
+#' @param cols Character. Vector of colors values of length equal to the number of groups to be tracked, node colors.
+#' @param alluvia_cols Character. Vector of colors values of length equal to the number of groups to be tracked, alluvium colors, default is same as `cols`.
 #' @param col2 Character. Color of untracked cells, default "gray100".
 #' @param title Character. Passed to `ggtitle`.
 #' @param xlab Character. Passed to `xlab`.
@@ -31,6 +32,7 @@ Plot_alluvia_track <- function(dl,
                         label_size = 2,
                         ltype = "text",
                         cols = BarCluster::cw_colors,
+                        alluvia_cols = cols,
                         col2 = "gray100"){
 
     dt <- dl %>% data.table::copy() %>% .[, .SD, .SDcols = c("rn", "Group", "alpha")]
@@ -105,12 +107,16 @@ Plot_alluvia_track <- function(dl,
 
     val1 <- names(v)
 
+    val2 <- c(col2, alluvia_cols[1:(length(v) - 1)])
+
     names(val1) <- v
+
+    names(val2) <- v
 
     p <- ggplot(dt,
            aes(x = alpha, stratum = Group, alluvium = rn,
                label = Group)) +
-      scale_color_manual(values = val1) +
+      scale_color_manual(values = val2) +
       scale_fill_manual(values = val1) +
       geom_flow(stat = "alluvium", lode.guidance = "frontback",
                 aes(color = init), alpha = flow_alpha) +

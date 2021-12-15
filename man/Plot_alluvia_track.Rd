@@ -17,6 +17,7 @@ Plot_alluvia_track(
   label_size = 2,
   ltype = "text",
   cols = BarCluster::cw_colors,
+  alluvia_cols = cols,
   col2 = "gray100"
 )
 }
@@ -43,7 +44,9 @@ Plot_alluvia_track(
 
 \item{ltype}{One of c("label", "text"). Passed as the geom to annotation. Default is "label"}
 
-\item{cols}{Character. Vector of colors values of length equal to the number of groups to be tracked.}
+\item{cols}{Character. Vector of colors values of length equal to the number of groups to be tracked, node colors.}
+
+\item{alluvia_cols}{Character. Vector of colors values of length equal to the number of groups to be tracked, alluvium colors, default is same as \code{cols}.}
 
 \item{col2}{Character. Color of untracked cells, default "gray100".}
 }
