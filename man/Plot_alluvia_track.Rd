@@ -16,7 +16,8 @@ Plot_alluvia_track(
   label_nodes = TRUE,
   label_size = 2,
   ltype = "text",
-  cols = BarCluster::cw_colors
+  cols = BarCluster::cw_colors,
+  col2 = "gray100"
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ Plot_alluvia_track(
 \item{ltype}{One of c("label", "text"). Passed as the geom to annotation. Default is "label"}
 
 \item{cols}{Character. Vector of colors values of length equal to the number of groups to be tracked.}
+
+\item{col2}{Character. Color of untracked cells, default "gray100".}
 }
 \value{
 Returns a ggplot object or two of the Sankey Plot.

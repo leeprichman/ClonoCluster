@@ -4,6 +4,7 @@
 #' @param dl A data table, with three columns, c("rn", "Group", "alpha").
 #' @param ids List. A list of character vectors containing rownames in dl (cellIDs) for each group to be tracked.
 #' @param cols Character. Vector of colors values of length equal to the number of groups to be tracked.
+#' @param col2 Character. Color of untracked cells, default "gray100".
 #' @param title Character. Passed to `ggtitle`.
 #' @param xlab Character. Passed to `xlab`.
 #' @param ylab Character. Passed to `ylab`.
@@ -29,7 +30,8 @@ Plot_alluvia_track <- function(dl,
                         label_nodes = TRUE,
                         label_size = 2,
                         ltype = "text",
-                        cols = BarCluster::cw_colors){
+                        cols = BarCluster::cw_colors,
+                        col2 = "gray100"){
 
     dt <- dl %>% data.table::copy() %>% .[, .SD, .SDcols = c("rn", "Group", "alpha")]
 
@@ -95,7 +97,7 @@ Plot_alluvia_track <- function(dl,
 
     v <- rt$init %>% unique %>% sort
 
-    names(v) <- c("grey", cols[1:(length(v) - 1)])
+    names(v) <- c(col2, cols[1:(length(v) - 1)])
 
     rt[, initcol := names(v)[which(v == init)] %>% unique, by = "init"]
 
