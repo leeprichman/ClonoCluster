@@ -4,7 +4,15 @@
 \alias{barcluster}
 \title{Plot a Sankey Diagram from a table of unique IDs, and two or more columns indicating membership groups to progress through, in order.}
 \usage{
-barcluster(irl, bt, alpha = c(0, 0.5, 1), beta = 0.1, res = 1, ...)
+barcluster(
+  irl,
+  bt,
+  alpha = c(0, 0.5, 1),
+  beta = 0.1,
+  res = 1,
+  method = "fast",
+  ...
+)
 }
 \arguments{
 \item{irl}{Matrix. Principal components matrix, output from \code{BarCluster::irlba_wrap}.}
@@ -16,6 +24,8 @@ barcluster(irl, bt, alpha = c(0, 0.5, 1), beta = 0.1, res = 1, ...)
 \item{beta}{Numeric. Exponent on alpha to adjust curve sloping. Default is 0.1.}
 
 \item{res}{Numeric. Resolution parameter passed to community detection algorithm.}
+
+\item{method}{c("fast", "index"), how the barcode matrix is made, default is fast, if its going too slow try "index".}
 
 \item{...}{Additional arguments passed to \code{RunModularityClustering}.}
 }

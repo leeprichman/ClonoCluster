@@ -6,6 +6,7 @@
 #' @param alpha Numeric. Alpha parameter or list of values to iterate over. Ranges from 0 to 1. A value of zero reflects only transcriptome edges, a value of one reflects only barcodes.
 #' @param beta Numeric. Exponent on alpha to adjust curve sloping. Default is 0.1.
 #' @param res Numeric. Resolution parameter passed to community detection algorithm.
+#' @param method c("fast", "index"), how the barcode matrix is made, default is fast, if its going too slow try "index".
 #' @param ... Additional arguments passed to `RunModularityClustering`.
 #'
 #' @import magrittr
@@ -29,9 +30,11 @@
 #'
 #' @export barcluster
 #' @md
-barcluster <- function(irl, bt, alpha = c(0, 0.5, 1), beta = 0.1, res = 1, ...){
+barcluster <- function(irl, bt, alpha = c(0, 0.5, 1), beta = 0.1, res = 1, method = "fast", ...){
 
-  nm <- build_barcode_matrix(bt)
+  if (method == "fast") nm <- build_barcode_matrix_fast(bt)
+
+  if (method == "index") nm <- build_barcode_matrix(bt)
 
   if (!all(sort(rownames(nm)) == sort(rownames(irl)))) stop("barcodes names don't match PCA")
 
