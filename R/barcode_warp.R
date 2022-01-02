@@ -2,7 +2,7 @@
 #' Warp principal components towards linear projection of barcodes.
 #' @param irl Matrix. Principal components matrix, output from `BarCluster::irlba_wrap`.
 #' @param bt Data table. Barcode table of two columns cell IDs ("rn") and barcodes ("Barcode").
-#' @param s Numeric. Alpha parameter, from 0 to 10.
+#' @param s Numeric. Warp factor, from 0 to 10.
 #'
 #' @return A matrix of the same dimensions as `irl` suitable for further reduction by UMAP.
 #'

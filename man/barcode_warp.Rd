@@ -11,7 +11,7 @@ barcode_warp(irl, bt, s)
 
 \item{bt}{Data table. Barcode table of two columns cell IDs ("rn") and barcodes ("Barcode").}
 
-\item{s}{Numeric. Alpha parameter, from 0 to 10.}
+\item{s}{Numeric. Warp factor, from 0 to 10.}
 }
 \value{
 A matrix of the same dimensions as \code{irl} suitable for further reduction by UMAP.
