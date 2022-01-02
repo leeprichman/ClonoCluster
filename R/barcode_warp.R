@@ -2,13 +2,13 @@
 #' Warp principal components towards linear projection of barcodes.
 #' @param irl Matrix. Principal components matrix, output from `BarCluster::irlba_wrap`.
 #' @param bt Data table. Barcode table of two columns cell IDs ("rn") and barcodes ("Barcode").
-#' @param alpha Numeric. Alpha parameter, from 0 to 1.
+#' @param s Numeric. Alpha parameter, from 0 to 10.
 #'
-#' @return A matrix of the same dimensions as `irl` suitable for further reduction by UMAP. 
+#' @return A matrix of the same dimensions as `irl` suitable for further reduction by UMAP.
 #'
 #' @export barcode_warp
 #' @md
-barcode_warp <- function(irl, bt, alpha){
+barcode_warp <- function(irl, bt, s){
 
   bt %<>% data.table::as.data.table()
 
@@ -40,11 +40,11 @@ barcode_warp <- function(irl, bt, alpha){
 
   mw <- mw[rownames(irl), ]
 
-  revise_mat <- function(irl, mw, alpha){
+  revise_mat <- function(irl, mw, s){
 
       mo <- irl - mw
 
-      mo <- mo * alpha
+      mo <- mo * (s/10)
 
       mo <- irl - mo
 
@@ -52,7 +52,7 @@ barcode_warp <- function(irl, bt, alpha){
 
     }
 
-  mo <- revise_mat(irl, mw, alpha)
+  mo <- revise_mat(irl, mw, s)
 
   return(mo)
 

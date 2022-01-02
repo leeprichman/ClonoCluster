@@ -4,14 +4,14 @@
 \alias{barcode_warp}
 \title{Warp principal components towards linear projection of barcodes.}
 \usage{
-barcode_warp(irl, bt, alpha)
+barcode_warp(irl, bt, s)
 }
 \arguments{
 \item{irl}{Matrix. Principal components matrix, output from \code{BarCluster::irlba_wrap}.}
 
 \item{bt}{Data table. Barcode table of two columns cell IDs ("rn") and barcodes ("Barcode").}
 
-\item{alpha}{Numeric. Alpha parameter, from 0 to 1.}
+\item{s}{Numeric. Alpha parameter, from 0 to 10.}
 }
 \value{
 A matrix of the same dimensions as \code{irl} suitable for further reduction by UMAP.
