@@ -18,7 +18,8 @@ Plot_alluvia_track(
   ltype = "text",
   cols = BarCluster::cw_colors,
   alluvia_cols = cols,
-  col2 = "gray100"
+  col2 = "gray100",
+  orientation = "bottom"
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ Plot_alluvia_track(
 \item{alluvia_cols}{Character. Vector of colors values of length equal to the number of groups to be tracked, alluvium colors, default is same as \code{cols}.}
 
 \item{col2}{Character. Color of untracked cells, default "gray100".}
+
+\item{orientation}{One of c("top", "bottom"), where colored rectangles will be stacked on the nodes. Default is "bottom".}
 }
 \value{
 Returns a ggplot object or two of the Sankey Plot.

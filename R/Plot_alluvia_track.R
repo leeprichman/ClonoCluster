@@ -15,6 +15,7 @@
 #' @param label_nodes Boolean. Should clusters be labeled with geom_label? Default TRUE.
 #' @param label_size Numeric. size of geom_text labels font.
 #' @param ltype One of c("label", "text"). Passed as the geom to annotation. Default is "label"
+#' @param orientation One of c("top", "bottom"), where colored rectangles will be stacked on the nodes. Default is "bottom".
 #'
 #' @return Returns a ggplot object or two of the Sankey Plot.
 #'
@@ -33,7 +34,8 @@ Plot_alluvia_track <- function(dl,
                         ltype = "text",
                         cols = BarCluster::cw_colors,
                         alluvia_cols = cols,
-                        col2 = "gray100"){
+                        col2 = "gray100",
+                        orientation = "bottom"){
 
     dt <- dl %>% data.table::copy() %>% .[, .SD, .SDcols = c("rn", "Group", "alpha")]
 
@@ -83,7 +85,9 @@ Plot_alluvia_track <- function(dl,
 
     rt <- lapply(rtl, function(rt){
 
-      rt %<>% .[order(init)]
+      if (orientation == "top") rt %<>% .[order(init)]
+
+      if (orientation == "bottom") rt %<>% .[order(-init)]
 
       rt[, cumN := cumsum(N)]
 
@@ -112,6 +116,20 @@ Plot_alluvia_track <- function(dl,
     names(val1) <- v
 
     names(val2) <- v
+
+    dt %>% setkey(init)
+
+    if (orientation == "top"){
+
+      dt %<>% .[order(init)]
+
+    }
+
+    if (orientation == "bottom"){
+
+      dt %<>% .[order(-init)]
+
+    }
 
     p <- ggplot(dt,
            aes(x = alpha, stratum = Group, alluvium = rn,
