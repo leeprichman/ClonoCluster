@@ -30,15 +30,15 @@ RunModularityClustering <- function(
   return(clusters)
 }
 
-## ---- RunModularityClusteringCpp
-#' internal function to call C code from`Seurat` for community detection.
-#'
-#' @export RunModularityClusteringCpp
-#' @md
-RunModularityClusteringCpp <- function(SNN, modularityFunction, resolution,
-  algorithm, nRandomStarts, nIterations, randomSeed, printOutput,
-  edgefilename) {
-    .Call('_Seurat_RunModularityClusteringCpp', PACKAGE = 'Seurat', SNN,
-    modularityFunction, resolution, algorithm, nRandomStarts, nIterations,
-    randomSeed, printOutput, edgefilename)
-}
+# ## ---- RunModularityClusteringCpp
+# #' internal function to call C code from`Seurat` for community detection.
+# #'
+# #' @export RunModularityClusteringCpp
+# #' @md
+# RunModularityClusteringCpp <- function(SNN, modularityFunction, resolution,
+#   algorithm, nRandomStarts, nIterations, randomSeed, printOutput,
+#   edgefilename) {
+#     .Call('_Seurat_RunModularityClusteringCpp', PACKAGE = 'Seurat', SNN,
+#     modularityFunction, resolution, algorithm, nRandomStarts, nIterations,
+#     randomSeed, printOutput, edgefilename)
+# }

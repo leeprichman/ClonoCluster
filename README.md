@@ -88,12 +88,26 @@ The first step is to generate our PCA matrix:
 
 ```
 library(magrittr)
-library(Seurat)
+library(data.table)
 library(BarCluster)
 
 cm <- data.table::fread("mycountmatrix.tsv")
 
+cm %<>% dt2m
 
+# using 25 PCs
+pca <- irlba_wrap(cm, npc = 25)
+
+```
+
+Now read in barcodes and BarCluster!
+
+```
+
+bt <- data.table::fread("mybarcodetable.tsv")
+
+# return the cluster assignments for range of alphas
+clust <- barcluster(pca, bt, alpha = seq(0, 1, by = 0.1), beta = 0.1, res = 1)
 
 ```
 
