@@ -54,7 +54,7 @@ barcluster <- function(irl, bt, alpha = c(0, 0.5, 1), beta = 0.1, res = 1, metho
     # this internal function will make sure m and nm are in the same order
     mm2 <- barcluster_model(alpha = alpha, beta = beta_val, m = m, nm = nm)
 
-    ids_b <- Seurat:::RunModularityClustering(SNN = mm2, resolution = res, ...)
+    ids_b <- Seurat:::RunModularityClustering(SNN = mm2, resolution = res, random.seed = 42, ...)
 
     names(ids_b) <- colnames(mm2)
 

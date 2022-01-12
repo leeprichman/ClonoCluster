@@ -111,7 +111,12 @@ clust <- barcluster(pca, bt, alpha = seq(0, 1, by = 0.1), beta = 0.1, res = 1)
 
 ```
 
-`clust` is a data table with the cluster assignment of each cell at all &alpha
+`clust` is a data table with the cluster assignment of each cell at all alpha values. First, lets identify points to conduct our analysis by making a plot of cluster number vs alpha.
+
+```
+
+
+```
 
 #### diagnostic plots to identify alphas
 

@@ -1,0 +1,164 @@
+---
+title: "BarCluster Tutorial"
+author: "Lee Richman"
+date: "01/11/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(magrittr)
+library(BarCluster)
+library(data.table)
+library(Seurat)
+
+knitr::knit_hooks$set(output = function(x, options) {
+  if (!is.null(n <- options$out.lines)) {
+    x <- xfun::split_lines(x)
+    if (length(x) > n) {
+      # truncate the output
+      x <- c(head(x, n), "....\n")
+    }
+    x <- paste(x, collapse = "\n")
+  }
+  hook_output(x, options)
+})
+
+options(out.lines = 6)
+
+```
+
+# Barcluster Tutorial
+
+Welcome to BarCluster. This RMarkDown file is a tutorial using sample data to generate hybrid clusters from lineage barcoded single cell sequencing data. We will:
+
+  1. Read in our data (count matrix and barcode assignments).
+
+  2. Run PCA on our count matrix.
+
+  3. Create our hybrid clusters across a range of values.
+
+  4. Determine maximum alpha values for analysis based on cluster number.
+
+  5. Generate Sankey plots to show cluster rearrangement.
+
+  6. Identify cluster markers with ROC analysis.
+
+  7. Plot a Sankey for marker positivity.
+
+  7. Perform UMAP and warp it!
+
+
+## Part 1: Setup
+
+Load required packages, get our tutorial data files:
+
+```{r setupshow, message = FALSE}
+
+library(data.table)
+library(magrittr)
+library(Seurat)
+library(BarCluster)
+
+# get the location of the sample data
+dir <- system.file(package = "BarCluster") %>% file.path(., "extdata")
+
+cm <- file.path(dir, "YG1_sample_genes.txt")
+
+bt <- file.path(dir, "YG1_sample_barcodes.txt")
+
+```
+
+Now lets read in and see what our files look like.
+
+```{r fread}
+
+# read in barcodes
+bt <- data.table::fread(bt)
+
+# what does it look like
+head(bt)
+
+# read in count matrix
+cm <- data.table::fread(cm)
+
+# what does it look like
+str(cm)
+
+```
+
+Everything read in correctly but the count matrix is formatted with cells as columns (a common output format). BarCluster expects cells as rows. No problem, I've included functions in BarCluster to reformat the data.table.
+
+```{r transpose}
+
+# transpose the table
+
+cm <- tdt(cm)
+
+# what does it look like?
+str(cm)
+
+```
+
+Looks good. Ok, one last setup step, turn out count matrix from a data table into a matrix.
+
+```{r matrix}
+
+# convert data table to matrix
+
+cm <- dt2m(cm)
+
+# what does it look like?
+str(cm)
+
+```
+
+## Part 2: Perform PCA.
+
+The next step is to generate our PCA matrix. The function `irlba_wrap` is a wrapper that will do this for you. You can set the random seed and the number of output PCs if you want, see `?irlba_wrap`. For this analysis, let's summarize our 501 genes to 25 PCs:
+
+```{r pca}
+# using 25 PCs
+pca <- irlba_wrap(cm, npc = 25)
+
+str(pca)
+
+```
+
+## Part 3: Generate hybrid clusters across a range of alpha values.
+
+The steps to perform hybrid clustering are:
+
+  1. Generate transcriptome shared nearest neighbor graph
+
+  2. Generate binary barcode graph
+
+  3. Integrate the two with the BarCluster model
+
+  4. Repeat for many values of alpha to determine max alpha with tolerable cluster numbers.
+
+Luckily, this is all executed with a single function whose inputs are the barcode table and the PCA we just made. The `barcluster` function does all this for one or more alpha values. The `beta` parameter will affect how each step in alpha affects the output, we are using 0.1 here, but feel free to experiment. The `res` argument is passed to the `Seurat` implementation of the Louvain algorithm. It will affect the number of clusters at low alpha, but at high alpha the determining factor is the number of barcodes in the sample. I suggest you choose a value for resolution that gives you a number of manageable clusters at alpha == 0, or simply the same value as whatever Seurat analysis you have performed on the data.
+
+```{r barcluster}
+
+# lets get our range of alpha values
+
+als <- seq(0, 1, by = 0.05)
+
+# return the cluster assignments for range of alphas
+clust <- barcluster(pca, bt, alpha = als, beta = 0.1, res = 1)
+
+print(clust)
+
+```
+
+`clust` is a data table with the cluster assignment of each cell at all alpha values. First, lets identify points to conduct our analysis by making a plot of cluster number vs alpha.
+
+```{r plotn}
+
+nt <- clust[, Group %>% unique %>% length, by = "alpha"]
+
+
+```
