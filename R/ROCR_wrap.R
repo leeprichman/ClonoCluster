@@ -56,3 +56,91 @@ ROCR_wrap <- function(x, y, return_curve = FALSE){
   return(roct)
 
 }
+
+## ---- Find_Markers_ROC
+#' Fast AUC calculation wrapper for clusters.
+#'
+#' @param dl A data.table of cluster assignments, output from `barcluster`, with minimum columns c("rn", "Group", "alpha").
+#' @param cm Matrix. A count matrix.
+#'
+#' @return A table of marker AUC, and thresholds for all clusters.
+#'
+#' @export Find_Markers_ROC
+#' @md
+
+Find_Markers_ROC <- function(dl, cm){
+
+  fast_comp <- function(v, x, y){
+
+    a <- ROCR_wrap(x = v[x], y = v[y], return_curve = TRUE)
+
+    a[, dist := sqrt(((1 - tpr)^2) + ((fpr)^2))]
+
+    a <- a[dist == min(dist)]
+
+    auc <- a[, auc %>% unique]
+
+    flip <- a[, is_flipped %>% unique]
+
+    thresh <- a[, thresh %>% unique %>% .[1]]
+
+    return(data.table::data.table(auc = auc, flip = flip, thresh = thresh))
+
+  }
+
+  pb <- utils::txtProgressBar(min = 0,
+    max = length(dl[, alpha %>% unique %>% length]),
+    style = 3)
+
+  aucts <- lapply(dl[, alpha %>% unique], function(a){
+
+    tr <- dl[alpha == a]
+
+    tr_auc <- lapply(tr[, Group %>% unique], function(go){
+
+      utils::setTxtProgressBar(pb, which(go == tr[, Group %>% unique]))
+
+      ing <- tr[Group == go, rn]
+
+      if (length(ing) < 10) return(NULL)
+
+      outg <- tr[Group != go, rn]
+
+      auc <- apply(gt, 2, function(x) fast_comp(x, ing, outg))
+
+      do <- lapply(auc %>% seq_along, function(n){
+
+        d <- auc[[n]]
+
+        g <- names(auc)[n]
+
+        d[, rn := g]
+
+        return(auc[[n]])
+
+      }) %>% data.table::rbindlist()
+
+      do[, Group := go]
+
+      return(do)
+
+    }) %>% data.table::rbindlist()
+
+    tr_auc[, alpha := a]
+
+    return(tr_auc)
+
+  }) %>% data.table::rbindlist()
+
+  aucts[, direction := ifelse(flip, "less", "greater")]
+
+  aucts[, flip := NULL]
+
+  aucts %<>% .[, .SD, .SDcols = c("rn", "auc", "thresh",
+                                "direction", "Group", "alpha")]
+
+  close(pb)
+
+  return(aucts)
+
+}

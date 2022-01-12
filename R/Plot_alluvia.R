@@ -33,7 +33,7 @@ Plot_alluvia <- function(dl,
                         label_size = 2,
                         ltype = "label",
                         reverse = TRUE,
-                        cols = seurat.extension::c25){
+                        cols = BarCluster::c25){
 
     dt <- dl %>% data.table::copy() %>% .[, .SD, .SDcols = c("rn", "Group", "alpha")]
 

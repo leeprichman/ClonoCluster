@@ -13,24 +13,11 @@ library(magrittr)
 library(BarCluster)
 library(data.table)
 library(Seurat)
-
-knitr::knit_hooks$set(output = function(x, options) {
-  if (!is.null(n <- options$out.lines)) {
-    x <- xfun::split_lines(x)
-    if (length(x) > n) {
-      # truncate the output
-      x <- c(head(x, n), "....\n")
-    }
-    x <- paste(x, collapse = "\n")
-  }
-  hook_output(x, options)
-})
-
-options(out.lines = 6)
+library(ggplot2)
 
 ```
 
-# Barcluster Tutorial
+# Walkthrough
 
 Welcome to BarCluster. This RMarkDown file is a tutorial using sample data to generate hybrid clusters from lineage barcoded single cell sequencing data. We will:
 
@@ -40,7 +27,7 @@ Welcome to BarCluster. This RMarkDown file is a tutorial using sample data to ge
 
   3. Create our hybrid clusters across a range of values.
 
-  4. Determine maximum alpha values for analysis based on cluster number.
+  4. Determine alpha values for analysis based on cluster number at fixed resolution.
 
   5. Generate Sankey plots to show cluster rearrangement.
 
@@ -61,6 +48,7 @@ library(data.table)
 library(magrittr)
 library(Seurat)
 library(BarCluster)
+library(ggplot2)
 
 # get the location of the sample data
 dir <- system.file(package = "BarCluster") %>% file.path(., "extdata")
@@ -141,18 +129,39 @@ The steps to perform hybrid clustering are:
 
 Luckily, this is all executed with a single function whose inputs are the barcode table and the PCA we just made. The `barcluster` function does all this for one or more alpha values. The `beta` parameter will affect how each step in alpha affects the output, we are using 0.1 here, but feel free to experiment. The `res` argument is passed to the `Seurat` implementation of the Louvain algorithm. It will affect the number of clusters at low alpha, but at high alpha the determining factor is the number of barcodes in the sample. I suggest you choose a value for resolution that gives you a number of manageable clusters at alpha == 0, or simply the same value as whatever Seurat analysis you have performed on the data.
 
-```{r barcluster}
+```{r barclusterinc, eval = FALSE}
 
 # lets get our range of alpha values
 
-als <- seq(0, 1, by = 0.05)
+als <- seq(0, 1, by = 0.1)
 
 # return the cluster assignments for range of alphas
-clust <- barcluster(pca, bt, alpha = als, beta = 0.1, res = 1)
+clust <- barcluster(pca, bt, alpha = als, beta = 0.1, res = 1.5)
 
 print(clust)
 
 ```
+
+```{r barclusternotinc, include = FALSE}
+
+# lets get our range of alpha values
+
+als <- seq(0, 1, by = 0.1)
+
+# return the cluster assignments for range of alphas
+clust <- barcluster(pca, bt, alpha = als, beta = 0.1, res = 1.5)
+
+```
+
+```{r barclusternotinc2, include = FALSE}
+
+print(clust)
+
+```
+
+These are your hybrid clusters.
+
+## Part 4: Identify target alpha values
 
 `clust` is a data table with the cluster assignment of each cell at all alpha values. First, lets identify points to conduct our analysis by making a plot of cluster number vs alpha.
 
@@ -160,5 +169,68 @@ print(clust)
 
 nt <- clust[, Group %>% unique %>% length, by = "alpha"]
 
+ggplot(nt, aes(x = alpha, y = V1)) +
+  geom_point(color = "dodgerblue") +
+  geom_line(color = "grey", linetype = "dashed") +
+  theme_bw() +
+  ttheme +
+  xlab("\u03B1") +
+  ylab("# of clusters") +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.1))
 
 ```
+
+It looks like there are four interesting points on the plot for this sample data (downsampled for top barcodes and 100 singlets from the WM989 high dose BRAF inhibitor replicate 1). I'll annotate them here:
+
+```{r plotnanno, echo = FALSE}
+
+ggplot(nt, aes(x = alpha, y = V1)) +
+  geom_point(color = "dodgerblue") +
+  geom_line(color = "grey", linetype = "dashed") +
+  theme_bw() +
+  ttheme +
+  xlab("\u03B1") +
+  ylab("# of clusters") +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.1)) +
+  geom_text(data = nt[alpha %in% c(0, 0.2, 0.4, 0.9)],
+  aes(x = alpha), y = 20, label = "*", size = 8)
+
+```
+
+From left to right, these points are the transcriptome clusters (alpha == 0), a nadir where addition of lineage information causes clusters to join (alpha == 0.2), the inflection point (alpha == 0.4), the the maximum value before clusters break apart into barcodes (alpha == 0.9).
+
+## Part 5: Sankey visualization
+
+Let's make a sankey plot to see the reorganization, subsetted on our alphas of interest. You could do this on the full range of alphas we ran by omitting the brackets and their contents after `clust` in the next call, but 100+ nodes on a sankey requiring individual discrete colors is not easy to grok.
+
+```{r sankey}
+
+notable_alphas <- c(0, 0.2, 0.4, 0.9)
+
+p <- Plot_alluvia(clust[alpha %in% notable_alphas],
+                  bt,
+                  title = "Sample Sankey",
+                  xlab = "\u03B1", # unicode symbol for alpha
+                  ylab = "# of cells",
+                  border_size = 1,
+                  label_nodes = FALSE, # labels nodes but hard to viz here
+                  cols = BarCluster::c25
+                  )
+
+p[[2]] <- p[[2]] + ggtitle("Sample Sankey", subtitle = "Colored by \u03B1 = 0.9 clusters")
+
+p
+
+```
+
+## Part 6: Identify cluster markers.
+
+Let's find the top cluster marker per cluster at each level. We will do this for ROC analysis for in vs out of cluster cells across all genes in the count matrix. I've written a function to make this easier. This is not fast however. If you already have a Seurat object, this may be quicker by input clusters as the active identity and using the `Seurat::FindAllMarkers` function. If you want to skip this step and just go right to the discovered markers, see the hashed annotations in this code.
+
+```{r findmarkers}
+
+
+
+```
+
+Let's track the marker *PSAP* over our Sankey.

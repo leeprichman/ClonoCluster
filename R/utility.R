@@ -37,3 +37,12 @@ dt2m <- function(dt){
   return(m)
 
 }
+
+## ---- ttheme
+#' internal function, plot theming.
+#'
+#' @export ttheme
+#' @md
+ttheme <- theme(axis.title = element_text(size = 8, face = "bold", color = "black"),
+                axis.text = element_text(size = 8, color = "black"),
+                plot.title = element_text(size = 8, face = "bold", color = "black", hjust = 0.5))
