@@ -18,7 +18,7 @@ Plot_alluvia(
   label_size = 2,
   ltype = "label",
   reverse = TRUE,
-  cols = seurat.extension::c25
+  cols = BarCluster::c25
 )
 }
 \arguments{
