@@ -35,7 +35,7 @@ Welcome to BarCluster. This RMarkDown file is a tutorial using sample data to ge
 
   7. Plot a Sankey for marker positivity.
 
-  7. Perform UMAP and warp it!
+  8. Perform UMAP and warp it!
 
 
 ## Part 1: Setup
@@ -229,8 +229,229 @@ Let's find the top cluster marker per cluster at each level. We will do this for
 
 ```{r findmarkers}
 
+# to skip this step:
+# auc_table <- data.table::fread("YG1_markers.txt")
+auc_table <- Find_Markers_ROC(clust[alpha %in% notable_alphas], cm)
 
+# you can save this table with:
+# auc_table %>% data.table::fwrite("mytable.txt")
+
+# what does it look like?
+head(auc_table)
+
+# Take the best auc for any cluster at each alpha
+auc_table <- auc_table[order(-auc)] %>% unique(by = c("rn", "alpha"))
 
 ```
 
-Let's track the marker *PSAP* over our Sankey.
+## Part 7: Tracking marker positivity by Sankey
+
+It may be useful to look at how marker strength changes across hybrid clusters. To assess this, we will first take the best possible AUC for each marker at each alpha and make a wide table to look at strength.
+
+```{r widen, messages = FALSE}
+
+aucw <- auc_table[, auc, by = c("alpha", "rn")] %>%
+  dcast(rn ~ alpha)
+
+# table of marker strength
+head(aucw)
+
+```
+
+Let's identify some markers to plot it on Sankey.
+
+```{r 2marker}
+
+aucw[, delta := `0` - `0.9`]
+
+# marker that falls off the most
+transcriptome_only <- aucw[order(-delta), rn[1]]
+
+# marker that improves the most
+alpha_enhanced <- aucw[order(delta), rn[1]]
+
+print(c(transcriptome_only, alpha_enhanced))
+
+```
+
+Let's plot the transcriptome_only marker. We will **put in cluster, marked cells in purple** and **out of cluster marked cells in grey**.
+
+```{r tomarker}
+
+# get the transcriptome cluster that the is the most effective for our marker
+at <- auc_table[alpha == 0 & rn == transcriptome_only]
+
+# get our marked cluster members
+cluster_members <- clust[alpha == 0 & Group == at[, Group], rn]
+
+# retrieve marked cells
+all_pos <- rownames(cm)[cm[, transcriptome_only] > at[, thresh]]
+
+# check if the sign is flipped for the AUC
+if (at[, direction == "less"])
+  all_pos <- rownames(cm)[cm[, transcriptome_only] < at[, thresh]]
+
+# get true positives (in cluster, positive)
+tp <- intersect(cluster_members, all_pos)
+
+# get false positives (out of cluster, positive)
+fp <- all_pos[!all_pos %chin% cluster_members]
+
+# generic plotting function, tracks any group of cells as a ribbon
+p <- Plot_alluvia_track(clust[alpha %in% notable_alphas],
+                          ids = list(fp, tp),
+                          title = paste0(transcriptome_only, "-positivity"),
+                          xlab = "\u03B1",
+                          ylab = "# of cells",
+                          label_nodes = FALSE,
+                          border_size = 1,
+                          flow_alpha = 1,
+                          cols = c("grey80", "purple")
+                        )
+
+# put table in the same order as the plot
+auc_table %<>% .[order(alpha)]
+
+# AUC annotations
+lab <- paste0("AUC: ", auc_table[rn == transcriptome_only]$auc %>%
+  `/`(.,100) %>% sprintf(fmt = "%.2f"))
+
+# add AUC annotations
+p <- p +
+  annotate("text", x = 1:4,
+  y = nrow(bt) * 1.1, label = lab, fontface = "bold")
+
+# add text theming
+p <- p + ttheme
+
+p
+
+```
+
+Let's plot an alpha-enhanced marker this time. We will **put in cluster, marked cells in purple** and **out of cluster marked cells in grey**.
+
+```{r aemarker}
+
+# get the hybrid cluster that the is the most effective for our marker
+at <- auc_table[alpha == last(notable_alphas) & rn == alpha_enhanced]
+
+# get our marked cluster members
+cluster_members <- clust[alpha == last(notable_alphas) & Group == at[, Group], rn]
+
+# retrieve marked cells
+all_pos <- rownames(cm)[cm[, alpha_enhanced] > at[, thresh]]
+
+# check if the sign is flipped for the AUC
+if (at[, direction == "less"])
+  all_pos <- rownames(cm)[cm[, alpha_enhanced] < at[, thresh]]
+
+tp <- intersect(cluster_members, all_pos)
+
+fp <- all_pos[!all_pos %chin% cluster_members]
+
+p <- Plot_alluvia_track(clust[alpha %in% notable_alphas],
+                          ids = list(fp, tp),
+                          title = paste0(alpha_enhanced, "-positivity"),
+                          xlab = "\u03B1",
+                          ylab = "# of cells",
+                          label_nodes = FALSE,
+                          border_size = 1,
+                          flow_alpha = 1,
+                          cols = c("grey80", "purple")
+                        )
+
+auc_table %<>% .[order(alpha)]
+
+lab <- paste0("AUC: ", auc_table[rn == alpha_enhanced]$auc %>%
+  `/`(.,100) %>% sprintf(fmt = "%.2f"))
+
+p <- p +
+  annotate("text", x = 1:4,
+  y = nrow(bt) * 1.1, label = lab, fontface = "bold")
+
+p <- p + ttheme
+
+p
+
+```
+
+## Part 8: UMAP and Warp Factor the data
+
+For the last part of our analysis, lets explore our barcodes and clusters in UMAP space. We will start by visualizing our clustering alphas in default UMAP space.
+
+```{r topmarkers}
+
+# lets do multiple warp factors
+wfs <- c(0, 2, 4, 6, 8, 10)
+
+# get our warped UMAPs
+umaps <- lapply(wfs, function(s){
+
+  mo <- barcode_warp(pca, bt, s)
+
+  um <- umap_matrix(mo)
+
+  um[, warp := s]
+
+}) %>% data.table::rbindlist()
+
+# add our barcodes to the table
+
+umaps <- merge(umaps, bt, by = "rn")
+
+# color by barcode and put singlets into one category
+umaps[, Barcode :=
+        ifelse(rn %>% unique %>% length > 1, Barcode, "Singlet"),
+        by = "Barcode"]
+
+# add transcriptome clusters, rename column, make discrete
+umaps <- merge(umaps, clust[alpha == 0, .(rn, Group)], by = "rn") %>%
+  setnames("Group", "Transcriptome") %>%
+  .[, Transcriptome := as.factor(Transcriptome)]
+
+# add low alpha clusters, rename, make discrete
+umaps <- merge(umaps, clust[alpha == notable_alphas[2], .(rn, Group)], by = "rn") %>%
+  setnames("Group", "Low_alpha") %>%
+  .[, Low_alpha := as.factor(Low_alpha)]
+
+ums <- lapply(c("Transcriptome", "Low_alpha", "Barcode"), function(g){
+
+  um <- ggplot(umaps, aes(x = UMAP_1, y = UMAP_2)) +
+    geom_point(aes_string(col = g), size = 0.3, alpha = 0.5) +
+    facet_wrap(~warp) +
+    scale_color_manual(values = c25) +
+    ttheme +
+    theme_void() +
+    theme(legend.position = "bottom")
+
+    return(um)
+
+})
+
+```
+
+Let's have a look at how our UMAP looks with increasing warp factor:
+
+Colored by transcriptome clusters.
+
+```{r um1}
+
+um[[1]]
+
+```
+
+Colored by low alpha clusters.
+
+```{r um2}
+
+um[[2]]
+
+```
+
+Colored by barcodes.
+
+```{r um3}
+
+um[[3]]
+
+```

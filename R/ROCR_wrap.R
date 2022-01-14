@@ -106,7 +106,7 @@ Find_Markers_ROC <- function(dl, cm){
 
       outg <- tr[Group != go, rn]
 
-      auc <- apply(gt, 2, function(x) fast_comp(x, ing, outg))
+      auc <- apply(cm, 2, function(x) fast_comp(x, ing, outg))
 
       do <- lapply(auc %>% seq_along, function(n){
 
