@@ -53,15 +53,17 @@ ttheme <- theme(axis.title = element_text(size = 8, face = "bold", color = "blac
 #'
 #' @param so A Seurat object or path to one.
 #' @param clust A table of cellIDs and group assignments.
-#' @param ... All arguments passed to `Seurat::FindAllMarkers`.
+#' @param method Passed to the `test.use` argument of `Seurat::FindAllMarkers`, default is "roc".
+#' @param ... All other arguments passed to `Seurat::FindAllMarkers`.
 #'
 #' @return A data.table of the output.
 #'
 #' @export FindAllMarkers_Seurat
 #' @md
-FindAllMarkers_Seurat <- function(so, groupt, ...){
+FindAllMarkers_Seurat <- function(so, clust, method = "roc", ...){
 
   if (class(o)[1] == "character"){
+
     obj <- o %>% readRDS()
 
   } else{
@@ -89,7 +91,7 @@ FindAllMarkers_Seurat <- function(so, groupt, ...){
 
     obj@active.ident <- v2 %>% as.factor
 
-    de <- Seurat::FindAllMarkers(obj, ...)
+    de <- Seurat::FindAllMarkers(obj, test.use = method, ...)
 
     de %<>% data.table::as.data.table(keep.rownames = TRUE)
 
@@ -98,6 +100,20 @@ FindAllMarkers_Seurat <- function(so, groupt, ...){
     return(de)
 
   }) %>% data.table::rbindlist()
+
+  dto %>% data.table::setnames("cluster", "Group")
+
+  if (method == "roc"){
+
+    dto[myAUC > 0.5, direction := "greater"]
+    dto[myAUC < 0.5, direction := "less"]
+
+    # fix flipped auc
+    dto[, auc := ifelse(auc == "less", 1 - myAUC, myAUC)]
+
+    dto %<>% .[, .SD, , .SDcols = c("rn", "auc", "direction", "Group", "alpha")]
+
+  }
 
   return(dto)
 

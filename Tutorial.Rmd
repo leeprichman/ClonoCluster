@@ -229,7 +229,7 @@ p[[2]]
 
 ## Part 6: Identify cluster markers. {#p6}
 
-Let's find the top cluster marker per cluster at each level. We will do this for ROC analysis for in vs out of cluster cells across all genes in the count matrix. I've written a function to make this easier. This is not fast however. If you already have a Seurat object, this may be quicker by inputting clusters as the active identity and using the `Seurat::FindAllMarkers` function. 
+Let's find the top cluster marker per cluster at each level. We will do this for ROC analysis for in vs out of cluster cells across all genes in the count matrix. I've written a function to make this easier. This is not fast however. If you already have a Seurat object, this may be quicker by inputting clusters as the active identity and using the `Seurat::FindAllMarkers` function and I've created a wrapper for that too. Scroll to the next code chunk.
 
 If you want to skip running this step and just go right to the discovered markers for the sample data, see the hashed annotations in this code.
 
@@ -250,12 +250,24 @@ auc_all <- data.table::fread(file.path(dir, "YG1_markers.txt"))
 
 ```
 
+If you want to use the Seurat FindAllMarkers implementation (which may be faster) use the function `FindAllMarkers_Seurat`. I have not directly compared these two methods so perform your own validation if needed. This method does not return the thresholds so you will be unable to complete [part 7](#p7) of this tutorial. If you identify target genes this way, you could go back to the `Find_Markers_ROC` function and subset the count matrix later to get your thresholds by using `cm[, my_vector_of_gene_names]`.
+
+```{r seuratmark, eval = FALSE}
+
+auc_all <- FindAllMarkers_Seurat(so, # seurat object
+                                 clust, # barcluster function output
+                                test.use = "roc") # if you let this default you will get wilcox.tests
+
+```
+
+Now lets go back to the workflow after using the `Find_Markers_ROC` function.
+
 ```{r showmarkerstable}
 
 # what does it look like?
 head(auc_all)
 
-# Take the best auc for any cluster at each alpha
+# If you want to take the best auc for any cluster at each alpha
 auc_table <- auc_all[order(-auc)] %>% unique(by = c("rn", "alpha"))
 
 head(auc_table)

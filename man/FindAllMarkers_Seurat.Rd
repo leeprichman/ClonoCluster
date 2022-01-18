@@ -4,14 +4,16 @@
 \alias{FindAllMarkers_Seurat}
 \title{A wrapper to call Seurat to FindAllMarkers on given groups.}
 \usage{
-FindAllMarkers_Seurat(so, groupt, ...)
+FindAllMarkers_Seurat(so, clust, method = "roc", ...)
 }
 \arguments{
 \item{so}{A Seurat object or path to one.}
 
-\item{...}{All arguments passed to \code{Seurat::FindAllMarkers}.}
-
 \item{clust}{A table of cellIDs and group assignments.}
+
+\item{method}{Passed to the \code{test.use} argument of \code{Seurat::FindAllMarkers}, default is "roc".}
+
+\item{...}{All other arguments passed to \code{Seurat::FindAllMarkers}.}
 }
 \value{
 A data.table of the output.
