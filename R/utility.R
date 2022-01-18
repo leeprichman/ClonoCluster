@@ -46,3 +46,59 @@ dt2m <- function(dt){
 ttheme <- theme(axis.title = element_text(size = 8, face = "bold", color = "black"),
                 axis.text = element_text(size = 8, color = "black"),
                 plot.title = element_text(size = 8, face = "bold", color = "black", hjust = 0.5))
+
+
+## ---- FindAllMarkers_Seurat
+#' A wrapper to call Seurat to FindAllMarkers on given groups.
+#'
+#' @param so A Seurat object or path to one.
+#' @param clust A table of cellIDs and group assignments.
+#' @param ... All arguments passed to `Seurat::FindAllMarkers`.
+#'
+#' @return A data.table of the output.
+#'
+#' @export FindAllMarkers_Seurat
+#' @md
+FindAllMarkers_Seurat <- function(so, groupt, ...){
+
+  if (class(o)[1] == "character"){
+    obj <- o %>% readRDS()
+
+  } else{
+
+    obj <- o
+
+  }
+
+  # replace the active.ident vector with our own classifications for cells
+  v <- obj@active.ident
+
+  vt <- data.table::data.table(rn = names(v))
+
+  dto <- lapply(clust[, alpha %>% unique], function(a){
+
+    vt <- merge(vt, clust[alpha == a], by = "rn", all.x = TRUE)
+
+    if (vt[, is.na(Group) %>% any])
+      warning(paste0("Not all cellIDs in Seurat Object were assigned to a group and will be",
+       "treated as one NA group. Check input."))
+
+    v2 <- vt[, Group]
+
+    names(v2) <- vt[, rn]
+
+    obj@active.ident <- v2 %>% as.factor
+
+    de <- Seurat::FindAllMarkers(obj, ...)
+
+    de %<>% data.table::as.data.table(keep.rownames = TRUE)
+
+    dt[, alpha := a]
+
+    return(de)
+
+  }) %>% data.table::rbindlist()
+
+  return(dto)
+
+}

@@ -21,24 +21,28 @@ library(ggplot2)
 
 Welcome to BarCluster. This RMarkDown file is a tutorial using sample data to generate hybrid clusters from lineage barcoded single cell sequencing data. We will:
 
-  1. Read in our data (count matrix and barcode assignments).
+  1. [Read in our data](#p1) (count matrix and barcode assignments).
 
-  2. Run PCA on our count matrix.
+  2. [Run PCA](#p2) on our count matrix.
 
-  3. Create our hybrid clusters across a range of values.
+  3. [Create our hybrid clusters](#p3) across a range of values.
 
-  4. Determine alpha values for analysis based on cluster number at fixed resolution.
+  4. [Determine alpha values](#p4) for analysis based on cluster number at fixed resolution.
 
-  5. Generate Sankey plots to show cluster rearrangement.
+  5. [Generate Sankey plots](#p5) to show cluster rearrangement.
 
-  6. Identify cluster markers with ROC analysis.
+  6. [Identify cluster markers](#p6) with ROC analysis.
 
-  7. Plot a Sankey for marker positivity.
+  7. [Plot a Sankey for marker positivity.](#p7)
 
-  8. Perform UMAP and warp it!
+  8. [Plot marker strength.](#p8)
+
+  9. [Perform UMAP and warp it!](#p9)
+
+The sample data provided is derived from one of our [published samples](link), reduced in size and complexity to host on GitHub. It consists of the top 15 barcodes plus 100 singlet cells and the 501 most variable genes in replicate 1 of high dose BRAF treated WM989 cells from [Goyal *et al. biorXiv* 2021](link).
 
 
-## Part 1: Setup
+## Part 1: Setup {#p1}
 
 Load required packages, get our tutorial data files:
 
@@ -50,11 +54,13 @@ library(Seurat)
 library(BarCluster)
 library(ggplot2)
 
-# get the location of the sample data
+# get the location of the sample data installed with barcluster
 dir <- system.file(package = "BarCluster") %>% file.path(., "extdata")
 
+# count matrix file
 cm <- file.path(dir, "YG1_sample_genes.txt")
 
+# barcode assignment file
 bt <- file.path(dir, "YG1_sample_barcodes.txt")
 
 ```
@@ -73,37 +79,26 @@ head(bt)
 cm <- data.table::fread(cm)
 
 # what does it look like
-str(cm)
+cm[1:5,1:5]
 
 ```
 
-Everything read in correctly but the count matrix is formatted with cells as columns (a common output format). BarCluster expects cells as rows. No problem, I've included functions in BarCluster to reformat the data.table.
+Everything read in correctly but the count matrix is formatted with cells as columns (a common output format). BarCluster expects cells as rows. No problem, I've included the functions `tdt` and `dt2m` in BarCluster to reformat the data.table and turn it into a matrix, respectively.
 
 ```{r transpose}
 
-# transpose the table
-
+# transpose the data table we read in to get cells as rows using the tdt function
 cm <- tdt(cm)
 
-# what does it look like?
-str(cm)
-
-```
-
-Looks good. Ok, one last setup step, turn out count matrix from a data table into a matrix.
-
-```{r matrix}
-
-# convert data table to matrix
-
+# convert data table to matrix using the dt2m function
 cm <- dt2m(cm)
 
 # what does it look like?
-str(cm)
+cm[1:5, 1:5]
 
 ```
 
-## Part 2: Perform PCA.
+## Part 2: Perform PCA. {#p2}
 
 The next step is to generate our PCA matrix. The function `irlba_wrap` is a wrapper that will do this for you. You can set the random seed and the number of output PCs if you want, see `?irlba_wrap`. For this analysis, let's summarize our 501 genes to 25 PCs:
 
@@ -111,23 +106,24 @@ The next step is to generate our PCA matrix. The function `irlba_wrap` is a wrap
 # using 25 PCs
 pca <- irlba_wrap(cm, npc = 25)
 
-str(pca)
+# peak at the first 5 columns and rows
+pca[1:5, 1:5]
 
 ```
 
-## Part 3: Generate hybrid clusters across a range of alpha values.
+## Part 3: Generate hybrid clusters across a range of alpha values. {#p3}
 
 The steps to perform hybrid clustering are:
 
   1. Generate transcriptome shared nearest neighbor graph
 
-  2. Generate binary barcode graph
+  2. Generate size normalized barcode graph
 
   3. Integrate the two with the BarCluster model
 
   4. Repeat for many values of alpha to determine max alpha with tolerable cluster numbers.
 
-Luckily, this is all executed with a single function whose inputs are the barcode table and the PCA we just made. The `barcluster` function does all this for one or more alpha values. The `beta` parameter will affect how each step in alpha affects the output, we are using 0.1 here, but feel free to experiment. The `res` argument is passed to the `Seurat` implementation of the Louvain algorithm. It will affect the number of clusters at low alpha, but at high alpha the determining factor is the number of barcodes in the sample. I suggest you choose a value for resolution that gives you a number of manageable clusters at alpha == 0, or simply the same value as whatever Seurat analysis you have performed on the data.
+Luckily, this is all executed with a single function whose inputs are the barcode table and the PCA we just made. The `barcluster` function does all this for one or more alpha values. The `beta` parameter will affect how each step in alpha affects the output, we are using 0.1 here, but feel free to experiment. The `res` argument is passed to the `Seurat` implementation of the Louvain algorithm. It will affect the number of clusters at low alpha, but at high alpha the determining factor is the number of barcodes in the sample. I suggest you choose a value for resolution that gives you a number of manageable clusters at alpha == 0, or simply the same value as whatever initial `Seurat` analysis you have performed on the data.
 
 ```{r barclusterinc, eval = FALSE}
 
@@ -137,8 +133,6 @@ als <- seq(0, 1, by = 0.1)
 
 # return the cluster assignments for range of alphas
 clust <- barcluster(pca, bt, alpha = als, beta = 0.1, res = 1.5)
-
-print(clust)
 
 ```
 
@@ -153,24 +147,27 @@ clust <- barcluster(pca, bt, alpha = als, beta = 0.1, res = 1.5)
 
 ```
 
-```{r barclusternotinc2, include = FALSE}
+```{r barclusternotinc2}
 
-print(clust)
+# lets take a peak at the output cluster assignments
+head(clust)
 
 ```
 
 These are your hybrid clusters.
 
-## Part 4: Identify target alpha values
+## Part 4: Identify target alpha values {#p4}
 
 `clust` is a data table with the cluster assignment of each cell at all alpha values. First, lets identify points to conduct our analysis by making a plot of cluster number vs alpha.
 
 ```{r plotn}
 
+# returns a table with column V1L number of groups at that value of alpha
 nt <- clust[, Group %>% unique %>% length, by = "alpha"]
 
+# plot it
 ggplot(nt, aes(x = alpha, y = V1)) +
-  geom_point(color = "dodgerblue") +
+  geom_point(color = "dodgerblue", size = 3) +
   geom_line(color = "grey", linetype = "dashed") +
   theme_bw() +
   ttheme +
@@ -180,12 +177,13 @@ ggplot(nt, aes(x = alpha, y = V1)) +
 
 ```
 
-It looks like there are four interesting points on the plot for this sample data (downsampled for top barcodes and 100 singlets from the WM989 high dose BRAF inhibitor replicate 1). I'll annotate them here:
+It looks like there are four interesting points on the plot for this sample data (downsampled for top barcodes and 100 singlets from the WM989 high dose BRAF inhibitor replicate 1). I'll annotate them with asterisks here:
 
 ```{r plotnanno, echo = FALSE}
 
+#plot it
 ggplot(nt, aes(x = alpha, y = V1)) +
-  geom_point(color = "dodgerblue") +
+  geom_point(color = "dodgerblue", size = 3) +
   geom_line(color = "grey", linetype = "dashed") +
   theme_bw() +
   ttheme +
@@ -193,63 +191,84 @@ ggplot(nt, aes(x = alpha, y = V1)) +
   ylab("# of clusters") +
   scale_x_continuous(breaks = seq(0, 1, by = 0.1)) +
   geom_text(data = nt[alpha %in% c(0, 0.2, 0.4, 0.9)],
-  aes(x = alpha), y = 20, label = "*", size = 8)
+  aes(x = alpha), y = 20, label = "*", size = 12)
 
 ```
 
-From left to right, these points are the transcriptome clusters (alpha == 0), a nadir where addition of lineage information causes clusters to join (alpha == 0.2), the inflection point (alpha == 0.4), the the maximum value before clusters break apart into barcodes (alpha == 0.9).
+From left to right, these points are the transcriptome clusters (alpha == 0), a nadir where addition of lineage information causes clusters to join (alpha == 0.2), the inflection point (alpha == 0.4), and the maximum value before clusters break apart into barcodes (alpha == 0.9).
 
-## Part 5: Sankey visualization
+## Part 5: Sankey visualization {#p5}
 
-Let's make a sankey plot to see the reorganization, subsetted on our alphas of interest. You could do this on the full range of alphas we ran by omitting the brackets and their contents after `clust` in the next call, but 100+ nodes on a sankey requiring individual discrete colors is not easy to grok.
+Let's make a sankey plot to see the reorganization, subsetted on our alphas of interest. You could do this on the full range of alphas we ran by omitting the brackets and their contents after `clust` in the next call, but 100+ nodes on a sankey requiring individual discrete colors is not easy to grok. The function `Plot_alluvia` generates two sankeys with default settings, colored by the node assignments at each end of the plot.
 
 ```{r sankey}
 
 notable_alphas <- c(0, 0.2, 0.4, 0.9)
 
-p <- Plot_alluvia(clust[alpha %in% notable_alphas],
-                  bt,
+# function to plot two sankeys colored by both ending nodes
+p <- Plot_alluvia(clust[alpha %in% notable_alphas], # subset table on these alpha values
+                  bt, # barcode table
                   title = "Sample Sankey",
                   xlab = "\u03B1", # unicode symbol for alpha
                   ylab = "# of cells",
-                  border_size = 1,
+                  border_size = 1, # border around the nodes
                   label_nodes = FALSE, # labels nodes but hard to viz here
-                  cols = BarCluster::c25
+                  cols = BarCluster::c25 # colors of nodes and ribbons
                   )
 
+# change the subtitle of the second plot because we aren't coloring by barcodes
 p[[2]] <- p[[2]] + ggtitle("Sample Sankey", subtitle = "Colored by \u03B1 = 0.9 clusters")
 
-p
+# plot colored by initial transcriptome
+p[[1]]
+
+# plot colored by highest alpha value in table
+p[[2]]
 
 ```
 
-## Part 6: Identify cluster markers.
+## Part 6: Identify cluster markers. {#p6}
 
-Let's find the top cluster marker per cluster at each level. We will do this for ROC analysis for in vs out of cluster cells across all genes in the count matrix. I've written a function to make this easier. This is not fast however. If you already have a Seurat object, this may be quicker by input clusters as the active identity and using the `Seurat::FindAllMarkers` function. If you want to skip this step and just go right to the discovered markers, see the hashed annotations in this code.
+Let's find the top cluster marker per cluster at each level. We will do this for ROC analysis for in vs out of cluster cells across all genes in the count matrix. I've written a function to make this easier. This is not fast however. If you already have a Seurat object, this may be quicker by inputting clusters as the active identity and using the `Seurat::FindAllMarkers` function. 
 
-```{r findmarkers}
+If you want to skip running this step and just go right to the discovered markers for the sample data, see the hashed annotations in this code.
+
+```{r findmarkers, eval = FALSE}
 
 # to skip this step:
-# auc_table <- data.table::fread("YG1_markers.txt")
-auc_table <- Find_Markers_ROC(clust[alpha %in% notable_alphas], cm)
+# auc_table <- data.table::fread(file.path(dir, "YG1_markers.txt"))
+auc_all <- Find_Markers_ROC(clust[alpha %in% notable_alphas], cm)
 
 # you can save this table with:
 # auc_table %>% data.table::fwrite("mytable.txt")
 
-# what does it look like?
-head(auc_table)
+```
 
-# Take the best auc for any cluster at each alpha
-auc_table <- auc_table[order(-auc)] %>% unique(by = c("rn", "alpha"))
+```{r readmarkers, include = FALSE}
+
+auc_all <- data.table::fread(file.path(dir, "YG1_markers.txt"))
 
 ```
 
-## Part 7: Tracking marker positivity by Sankey
+```{r showmarkerstable}
+
+# what does it look like?
+head(auc_all)
+
+# Take the best auc for any cluster at each alpha
+auc_table <- auc_all[order(-auc)] %>% unique(by = c("rn", "alpha"))
+
+head(auc_table)
+
+```
+
+## Part 7: Tracking marker positivity by Sankey {#p7}
 
 It may be useful to look at how marker strength changes across hybrid clusters. To assess this, we will first take the best possible AUC for each marker at each alpha and make a wide table to look at strength.
 
 ```{r widen, messages = FALSE}
 
+# take our long format data and make it wide
 aucw <- auc_table[, auc, by = c("alpha", "rn")] %>%
   dcast(rn ~ alpha)
 
@@ -274,7 +293,7 @@ print(c(transcriptome_only, alpha_enhanced))
 
 ```
 
-Let's plot the transcriptome_only marker. We will **put in cluster, marked cells in purple** and **out of cluster marked cells in grey**.
+Let's plot the transcriptome_only marker. We will make **in cluster, marked cells in purple** and **out of cluster marked cells in grey**.
 
 ```{r tomarker}
 
@@ -319,10 +338,10 @@ lab <- paste0("AUC: ", auc_table[rn == transcriptome_only]$auc %>%
 # add AUC annotations
 p <- p +
   annotate("text", x = 1:4,
-  y = nrow(bt) * 1.1, label = lab, fontface = "bold")
+  y = nrow(bt) * 1.1, label = lab, fontface = "bold", size = 6)
 
 # add text theming
-p <- p + ttheme
+p <- p + ttheme + theme(plot.title = element_text(size = 12))
 
 p
 
@@ -367,19 +386,62 @@ lab <- paste0("AUC: ", auc_table[rn == alpha_enhanced]$auc %>%
 
 p <- p +
   annotate("text", x = 1:4,
-  y = nrow(bt) * 1.1, label = lab, fontface = "bold")
+  y = nrow(bt) * 1.1, label = lab, fontface = "bold", size = 6)
 
-p <- p + ttheme
+p <- p + ttheme + theme(plot.title = element_text(size = 12))
 
 p
 
 ```
 
-## Part 8: UMAP and Warp Factor the data
+## Part 8: Plot marker strength {#p8}
+
+Let's quickly plot the overall strength of top cluster markers across alpha values
+
+```{r markerbox}
+
+# top cluster markers boxplot
+topmarkers <- auc_all %>% split(by = c("alpha", "Group")) %>%
+
+  lapply(., function(t){
+
+    return(t[auc == max(auc)])
+
+  }) %>% data.table::rbindlist()
+
+ggplot(topmarkers, aes(x = as.factor(alpha), y = auc)) +
+  geom_boxplot(fill = "dodgerblue") +
+  theme_bw() +
+  ttheme +
+  theme(plot.title = element_text(size = 12)) +
+  ggtitle("Top cluster markers") +
+  xlab("\u03B1") +
+  ylab("AUC as %") +
+  ylim(50,100)
+
+```
+
+Now let's plot the maximum strength for any cluster of top markers over alpha.
+
+```{r hm}
+
+m2b <- aucw[rn %chin% topmarkers[, rn], .SD, .SDcols = c("rn", as.character(notable_alphas))]
+
+m <- dt2m(m2b)
+
+pheatmap::pheatmap(m, cluster_cols = FALSE)
+
+```
+
+
+## Part 9: UMAP and Warp Factor the data {#p9}
 
 For the last part of our analysis, lets explore our barcodes and clusters in UMAP space. We will start by visualizing our clustering alphas in default UMAP space.
 
-```{r topmarkers}
+TODO show wf levels, pick an optimal
+ tr and low alpha clusters at 0 and pick some other wf, then show a few barcodes done
+
+```{r topmarkers, eval = FALSE}
 
 # lets do multiple warp factors
 wfs <- c(0, 2, 4, 6, 8, 10)
@@ -404,25 +466,21 @@ umaps[, Barcode :=
         ifelse(rn %>% unique %>% length > 1, Barcode, "Singlet"),
         by = "Barcode"]
 
-# add transcriptome clusters, rename column, make discrete
-umaps <- merge(umaps, clust[alpha == 0, .(rn, Group)], by = "rn") %>%
-  setnames("Group", "Transcriptome") %>%
-  .[, Transcriptome := as.factor(Transcriptome)]
+ums <- lapply(umaps[, Barcode %>% unique], function(g){
 
-# add low alpha clusters, rename, make discrete
-umaps <- merge(umaps, clust[alpha == notable_alphas[2], .(rn, Group)], by = "rn") %>%
-  setnames("Group", "Low_alpha") %>%
-  .[, Low_alpha := as.factor(Low_alpha)]
+  ump <- umaps %>% data.table::copy()
 
-ums <- lapply(c("Transcriptome", "Low_alpha", "Barcode"), function(g){
+  ump[Barcode == g, col := "00"]
 
-  um <- ggplot(umaps, aes(x = UMAP_1, y = UMAP_2)) +
-    geom_point(aes_string(col = g), size = 0.3, alpha = 0.5) +
+  ump[Barcode != g, col := "ZZ"]
+
+  um <- ggplot(ump, aes(x = UMAP_1, y = UMAP_2)) +
+    geom_point(aes(col = col), size = 0.3, alpha = 0.5) +
     facet_wrap(~warp) +
-    scale_color_manual(values = c25) +
+    scale_color_manual(values = c("grey", cw_colors[2])) +
     ttheme +
     theme_void() +
-    theme(legend.position = "bottom")
+    theme(legend.position = "none")
 
     return(um)
 
@@ -430,28 +488,58 @@ ums <- lapply(c("Transcriptome", "Low_alpha", "Barcode"), function(g){
 
 ```
 
-Let's have a look at how our UMAP looks with increasing warp factor:
+```{r topmarkers2, include = FALSE}
 
-Colored by transcriptome clusters.
+# lets do multiple warp factors
+wfs <- c(0, 2, 4, 6, 8, 10)
+
+# get our warped UMAPs
+umaps <- lapply(wfs, function(s){
+
+  mo <- barcode_warp(pca, bt, s)
+
+  um <- umap_matrix(mo)
+
+  um[, warp := s]
+
+}) %>% data.table::rbindlist()
+
+# add our barcodes to the table
+
+umaps <- merge(umaps, bt, by = "rn")
+
+# color by barcode and put singlets into one category
+umaps[, Barcode :=
+        ifelse(rn %>% unique %>% length > 1, Barcode, "Singlet"),
+        by = "Barcode"]
+
+ums <- lapply(umaps[, Barcode %>% unique], function(g){
+
+  ump <- umaps %>% data.table::copy()
+
+  ump[Barcode == g, col := "00"]
+
+  ump[Barcode != g, col := "ZZ"]
+
+  um <- ggplot(ump, aes(x = UMAP_1, y = UMAP_2)) +
+    geom_point(aes(col = col), size = 0.3, alpha = 0.5) +
+    facet_wrap(~warp) +
+    scale_color_manual(values = c(cw_colors[2], "gray")) +
+    ttheme +
+    theme_void() +
+    theme(legend.position = "none") +
+    ggtitle(paste("Barcode", g))
+
+    return(um)
+
+})
+
+```
+
+Let's have a look at how our UMAP looks with increasing warp factor for each barcode:
 
 ```{r um1}
 
-um[[1]]
-
-```
-
-Colored by low alpha clusters.
-
-```{r um2}
-
-um[[2]]
-
-```
-
-Colored by barcodes.
-
-```{r um3}
-
-um[[3]]
+ums
 
 ```
