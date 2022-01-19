@@ -557,11 +557,9 @@ wfs <- c(0, 2, 4, 6, 8, 10)
 # get our warped UMAPs
 umaps <- lapply(wfs, function(s){
 
-  mo <- barcode_warp(pca, bt, s)
+  uws <- engage_warp(pca, bt, s)
 
-  um <- umap_matrix(mo)
-
-  um[, warp := s]
+  return(uws)
 
 }) %>% data.table::rbindlist()
 
@@ -620,26 +618,34 @@ umaps[, Barcode :=
         ifelse(rn %>% unique %>% length > 1, Barcode, "Singlet"),
         by = "Barcode"]
 
-ums <- lapply(umaps[, Barcode %>% unique], function(g){
+# ums <- lapply(umaps[, Barcode %>% unique], function(g){
+#
+#   ump <- umaps %>% data.table::copy()
+#
+#   ump[Barcode == g, col := "00"]
+#
+#   ump[Barcode != g, col := "ZZ"]
+#
+#   um <- ggplot(ump, aes(x = UMAP_1, y = UMAP_2)) +
+#     geom_point(aes(col = col), size = 0.3, alpha = 0.5) +
+#     facet_wrap(~warp) +
+#     scale_color_manual(values = c(cw_colors[2], "gray")) +
+#     ttheme +
+#     theme_void() +
+#     theme(legend.position = "none") +
+#     ggtitle(paste("Barcode", g))
+#
+#     return(um)
+#
+# })
 
-  ump <- umaps %>% data.table::copy()
-
-  ump[Barcode == g, col := "00"]
-
-  ump[Barcode != g, col := "ZZ"]
-
-  um <- ggplot(ump, aes(x = UMAP_1, y = UMAP_2)) +
-    geom_point(aes(col = col), size = 0.3, alpha = 0.5) +
+ums <- ggplot(umaps, aes(x = UMAP_1, y = UMAP_2)) +
+    geom_point(aes(col = Barcode), size = 0.3, alpha = 0.5) +
     facet_wrap(~warp) +
-    scale_color_manual(values = c(cw_colors[2], "gray")) +
+    scale_color_manual(values = c25) +
     ttheme +
     theme_void() +
-    theme(legend.position = "none") +
-    ggtitle(paste("Barcode", g))
-
-    return(um)
-
-})
+    theme(legend.position = "bottom")
 
 ```
 

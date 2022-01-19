@@ -4,10 +4,10 @@
 \alias{barcode_warp}
 \title{Warp principal components towards linear projection of barcodes.}
 \usage{
-barcode_warp(pca, bt, s)
+barcode_warp(irl, bt, s)
 }
 \arguments{
-\item{pca}{Matrix. Principal components matrix, output from \code{BarCluster::irlba_wrap}.}
+\item{irl}{Matrix. Principal components matrix, output from \code{BarCluster::irlba_wrap}.}
 
 \item{bt}{Data table. Barcode table of two columns cell IDs ("rn") and barcodes ("Barcode").}
 
