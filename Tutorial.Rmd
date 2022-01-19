@@ -14,6 +14,8 @@ library(BarCluster)
 library(data.table)
 library(Seurat)
 library(ggplot2)
+library(pheatmap)
+library(cowplot)
 
 ```
 
@@ -53,6 +55,8 @@ library(magrittr)
 library(Seurat)
 library(BarCluster)
 library(ggplot2)
+library(pheatmap)
+library(cowplot)
 
 # get the location of the sample data installed with barcluster
 dir <- system.file(package = "BarCluster") %>% file.path(., "extdata")
@@ -282,7 +286,7 @@ It may be useful to look at how marker strength changes across hybrid clusters. 
 
 # take our long format data and make it wide
 aucw <- auc_table[, auc, by = c("alpha", "rn")] %>%
-  dcast(rn ~ alpha)
+  dcast(rn ~ alpha, value.var = "auc")
 
 # table of marker strength
 head(aucw)
@@ -293,6 +297,7 @@ Let's identify some markers to plot it on Sankey.
 
 ```{r 2marker}
 
+# get the maximum diff between our highest alpha and our lowest
 aucw[, delta := `0` - `0.9`]
 
 # marker that falls off the most
@@ -301,11 +306,12 @@ transcriptome_only <- aucw[order(-delta), rn[1]]
 # marker that improves the most
 alpha_enhanced <- aucw[order(delta), rn[1]]
 
+# which markers are they?
 print(c(transcriptome_only, alpha_enhanced))
 
 ```
 
-Let's plot the transcriptome_only marker. We will make **in cluster, marked cells in purple** and **out of cluster marked cells in grey**.
+Let's plot the transcriptome only marker. We will make **in cluster, marked cells in purple** and **out of cluster marked cells in grey**.
 
 ```{r tomarker}
 
@@ -412,7 +418,7 @@ Let's quickly plot the overall strength of top cluster markers across alpha valu
 
 ```{r markerbox}
 
-# top cluster markers boxplot
+# split the table by cluster and get the top marker
 topmarkers <- auc_all %>% split(by = c("alpha", "Group")) %>%
 
   lapply(., function(t){
@@ -421,6 +427,7 @@ topmarkers <- auc_all %>% split(by = c("alpha", "Group")) %>%
 
   }) %>% data.table::rbindlist()
 
+# make a boxplot of the auc of top markers per cluster
 ggplot(topmarkers, aes(x = as.factor(alpha), y = auc)) +
   geom_boxplot(fill = "dodgerblue") +
   theme_bw() +
@@ -437,11 +444,14 @@ Now let's plot the maximum strength for any cluster of top markers over alpha.
 
 ```{r hm}
 
+# get a table of just the genes in topmarkers and put columns in order
 m2b <- aucw[rn %chin% topmarkers[, rn], .SD, .SDcols = c("rn", as.character(notable_alphas))]
 
+# convert data table to matrix
 m <- dt2m(m2b)
 
-pheatmap::pheatmap(m, cluster_cols = FALSE)
+# use pheatmap to make a heatmap, don't hierarchically cluster columns
+pheatmap(m, cluster_cols = FALSE)
 
 ```
 
@@ -450,10 +460,96 @@ pheatmap::pheatmap(m, cluster_cols = FALSE)
 
 For the last part of our analysis, lets explore our barcodes and clusters in UMAP space. We will start by visualizing our clustering alphas in default UMAP space.
 
-TODO show wf levels, pick an optimal
- tr and low alpha clusters at 0 and pick some other wf, then show a few barcodes done
+```{r defaultumap, eval = FALSE}
 
-```{r topmarkers, eval = FALSE}
+# move clusters to wide format so we can merge once
+clw <- clust[alpha %in% notable_alphas] %>%
+  dcast(rn ~ alpha, value.var = "Group")
+
+# cluster column names
+coln <- names(clw)[2:ncol(clw)] %>% paste("\u03B1 = ", ., sep = "")
+
+# rename columns
+names(clw)[2:ncol(clw)] <- coln
+
+# default PCA based umap
+um_tr <- umap_matrix(pca)
+
+# merge clusters to umap coords
+um_tr <- merge(um_tr, clw, by = "rn")
+
+# loop over groupings to make umap plots
+pl <- lapply(coln, function(cs){
+
+  um <- um_tr %>% data.table::copy()
+
+  um %>% data.table::setnames(cs, "group")
+
+  p <- ggplot(um, aes(x = UMAP_1, y = UMAP_2)) +
+    geom_point(aes(color = group), size = 0.3, alpha = 0.5) +
+    scale_color_manual(values = c25) +
+    ttheme +
+    theme_void() +
+    theme(legend.position = "none") +
+    ggtitle(paste(cs, "clusters"))
+
+  return(p)
+
+})
+
+# plot on a grid
+cowplot::plot_grid(plotlist = pl, nrow = 1)
+
+```
+
+```{r defaultumap2, include = FALSE}
+
+# move clusters to wide format so we can merge once
+clust[, Group2 := paste("G", Group, sep = "")]
+
+clw <- clust[alpha %in% notable_alphas] %>%
+  dcast(rn ~ alpha, value.var = "Group2")
+
+# cluster column names
+coln <- names(clw)[2:ncol(clw)] %>% paste("\u03B1 = ", ., sep = "")
+
+# rename columns
+names(clw)[2:ncol(clw)] <- coln
+
+# default PCA based umap
+um_tr <- umap_matrix(pca)
+
+um_tr <- merge(um_tr, clw, by = "rn")
+
+pl <- lapply(coln, function(cs){
+
+  um <- um_tr %>% data.table::copy()
+
+  um %>% data.table::setnames(cs, "group")
+
+  p <- ggplot(um, aes(x = UMAP_1, y = UMAP_2)) +
+    geom_point(aes(color = group), size = 0.3, alpha = 0.5) +
+    scale_color_manual(values = c25) +
+    ttheme +
+    theme_void() +
+    theme(legend.position = "none") +
+    ggtitle(paste(cs, "clusters"))
+
+  return(p)
+
+})
+
+plg <- cowplot::plot_grid(plotlist = pl, nrow = 1)
+
+```
+
+```{r plg, echo = FALSE}
+
+plg
+
+```
+
+```{r warp1, eval = FALSE}
 
 # lets do multiple warp factors
 wfs <- c(0, 2, 4, 6, 8, 10)
@@ -470,7 +566,6 @@ umaps <- lapply(wfs, function(s){
 }) %>% data.table::rbindlist()
 
 # add our barcodes to the table
-
 umaps <- merge(umaps, bt, by = "rn")
 
 # color by barcode and put singlets into one category
@@ -500,7 +595,7 @@ ums <- lapply(umaps[, Barcode %>% unique], function(g){
 
 ```
 
-```{r topmarkers2, include = FALSE}
+```{r warp2, include = FALSE}
 
 # lets do multiple warp factors
 wfs <- c(0, 2, 4, 6, 8, 10)
