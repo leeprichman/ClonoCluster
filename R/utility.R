@@ -109,7 +109,7 @@ FindAllMarkers_Seurat <- function(so, clust, method = "roc", ...){
     dto[myAUC < 0.5, direction := "less"]
 
     # fix flipped auc
-    dto[, auc := ifelse(auc == "less", 1 - myAUC, myAUC)]
+    dto[, auc := ifelse(direction == "less", 1 - myAUC, myAUC)]
 
     dto %<>% .[, .SD, , .SDcols = c("rn", "auc", "direction", "Group", "alpha")]
 
