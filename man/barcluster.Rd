@@ -2,7 +2,7 @@
 % Please edit documentation in R/barcluster.R
 \name{barcluster}
 \alias{barcluster}
-\title{Plot a Sankey Diagram from a table of unique IDs, and two or more columns indicating membership groups to progress through, in order.}
+\title{Return hybrid clusters for a range of alpha values.}
 \usage{
 barcluster(
   irl,
@@ -33,5 +33,5 @@ barcluster(
 A long format data table with three columns, cell ID ("rn"), alpha value, beta value, and cluster assignment ("Group").
 }
 \description{
-Plot a Sankey Diagram from a table of unique IDs, and two or more columns indicating membership groups to progress through, in order.
+Return hybrid clusters for a range of alpha values.
 }
