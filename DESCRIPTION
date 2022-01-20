@@ -1,5 +1,5 @@
 Package: BarCluster
-Title: Lineage informed scRNAseq clustering
+Title: Lineage informed single cell RNA sequencing clustering
 Version: 0.0.1
 Authors@R:
     c(person(given = c("Lee", "P."),
@@ -36,3 +36,4 @@ Imports:
 LinkingTo: Rcpp, RcppEigen, RcppProgress
 RoxygenNote: 7.1.1
 Encoding: UTF-8
+Config/testthat/edition: 3

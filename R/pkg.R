@@ -1,4 +1,4 @@
-#' \pkg{BarCluster}: Barcode informed scRNAseq clustering.
+#' \pkg{BarCluster}: Lineage informed single cell RNA sequencing clustering.
 #'
 #' @docType package
 #' @name BarCluster

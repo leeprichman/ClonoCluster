@@ -1,5 +1,5 @@
 ## ---- barcluster
-#' Plot a Sankey Diagram from a table of unique IDs, and two or more columns indicating membership groups to progress through, in order.
+#' Return hybrid clusters for a range of alpha values.
 #'
 #' @param irl Matrix. Principal components matrix, output from `BarCluster::irlba_wrap`.
 #' @param bt Data table. Barcode table of two columns cell IDs ("rn") and barcodes ("Barcode").
@@ -25,6 +25,8 @@
 #' @import ROCR
 #' @import ggalluvial
 #' @import utils
+#' @import testthat
+#' @import digest
 #'
 #' @return A long format data table with three columns, cell ID ("rn"), alpha value, beta value, and cluster assignment ("Group").
 #'

@@ -21,7 +21,7 @@ library(cowplot)
 
 # Walkthrough
 
-Welcome to BarCluster. This RMarkDown file is a tutorial using sample data to generate hybrid clusters from lineage barcoded single cell sequencing data. We will:
+Welcome to BarCluster. This RMarkDown file is a tutorial using sample data to generate hybrid clusters from lineage barcoded single cell sequencing data. In the naive clustering setting, the absence of known "ground truth" cell types makes the significance of clusters uncertain. Using BarCluster will better align clusters with the ground truth represented by lineage barcodes. We will:
 
   1. [Read in our data](#p1) (count matrix and barcode assignments).
 
@@ -41,7 +41,7 @@ Welcome to BarCluster. This RMarkDown file is a tutorial using sample data to ge
 
   9. [Perform UMAP and warp it!](#p9)
 
-The sample data provided is derived from one of our [published samples](link), reduced in size and complexity to host on GitHub. It consists of the top 15 barcodes plus 100 singlet cells and the 501 most variable genes in replicate 1 of high dose BRAF treated WM989 cells from [Goyal *et al. biorXiv* 2021](link).
+The sample data provided is derived from one of our [published samples](link), reduced in size and complexity to host on GitHub. It consists of the top 15 barcodes plus 100 singlet cells and the 501 most variable genes in replicate 1 of high dose BRAF treated WM989 cells from [Goyal *et al. biorXiv* 2021](https://www.biorxiv.org/content/10.1101/2021.12.08.471833v1).
 
 
 ## Part 1: Setup {#p1}
@@ -181,6 +181,8 @@ ggplot(nt, aes(x = alpha, y = V1)) +
 
 ```
 
+There isn't a ton of change in cluster numbers until alpha == 1, which is an artifact of having reduced the number of non-singlet barcodes in the sample to only 15. In real data with hundreds of barcodes of various sizes, expect a larger range of cluster numbers that trends upward with alpha.
+
 It looks like there are four interesting points on the plot for this sample data (downsampled for top barcodes and 100 singlets from the WM989 high dose BRAF inhibitor replicate 1). I'll annotate them with asterisks here:
 
 ```{r plotnanno, echo = FALSE}
@@ -199,7 +201,7 @@ ggplot(nt, aes(x = alpha, y = V1)) +
 
 ```
 
-From left to right, these points are the transcriptome clusters (alpha == 0), a nadir where addition of lineage information causes clusters to join (alpha == 0.2), the inflection point (alpha == 0.4), and the maximum value before clusters break apart into barcodes (alpha == 0.9).
+From left to right, these points are the transcriptome clusters (alpha == 0), a nadir where addition of lineage information causes clusters to join (alpha == 0.2), the inflection point (alpha == 0.4), and the maximum value before clusters break apart into individual barcodes, including singlets (alpha == 0.9).
 
 ## Part 5: Sankey visualization {#p5}
 
@@ -230,6 +232,8 @@ p[[1]]
 p[[2]]
 
 ```
+
+In the first plot, you can see that the purple transcriptome cluster almost immediately splits up, and this appears to track with the reorganization of the yellow high alpha cluster in the second plot. This likely represents a barcode splitting off from the rest of that cluster. You can also see from the second plot how the bottom blue transcriptome cluster of the first plot has contributions from all different high alpha clusters, suggesting multiple lineages are contributing to this cluster. This actually represents the singlets combined with a few cells from each of the large barcode. They have a distinct SOX10 positive non-proliferative phenotype (hence why many of them are singlets) that each of the large barcodes appear to contribute some cells to as well.
 
 ## Part 6: Identify cluster markers. {#p6}
 
@@ -301,7 +305,8 @@ Let's identify some markers to plot it on Sankey.
 aucw[, delta := `0` - `0.9`]
 
 # marker that falls off the most
-transcriptome_only <- aucw[order(-delta), rn[1]]
+# taking second most actually because first marks a small cluster that's hard to visualize
+transcriptome_only <- aucw[order(-delta), rn[2]]
 
 # marker that improves the most
 alpha_enhanced <- aucw[order(delta), rn[1]]
@@ -365,6 +370,8 @@ p
 
 ```
 
+As you can see, this marker loses fidelity with increasing alpha, suggesting its expression doesn't correlate with any particular lineage.
+
 Let's plot an alpha-enhanced marker this time. We will **put in cluster, marked cells in purple** and **out of cluster marked cells in grey**.
 
 ```{r aemarker}
@@ -412,9 +419,11 @@ p
 
 ```
 
-## Part 8: Plot marker strength {#p8}
+This alpha enhanced marker increases in fidelity with the addition of lineage information by increasing alpha, suggesting a unique expression level across one or more barcodes.
 
-Let's quickly plot the overall strength of top cluster markers across alpha values
+## Part 8: Plot marker fidelity {#p8}
+
+Let's quickly plot the overall AUCs of top cluster markers across alpha values:
 
 ```{r markerbox}
 
@@ -440,7 +449,9 @@ ggplot(topmarkers, aes(x = as.factor(alpha), y = auc)) +
 
 ```
 
-Now let's plot the maximum strength for any cluster of top markers over alpha.
+Overall marker fidelity is pretty much intact across alpha values. This is not always the case, as demonstrated in [our analysis](link) of [Jiang *et al. biorXiv* (2021)](https://www.biorxiv.org/content/10.1101/2021.08.08.455532v1). If there is a significant loss of fidelity, BarClusters may not be useful for identifying meaningful cluster markers and this may suggest that your system has largely extrinsic determinants of cell fate. It may be worth continuing the analysis however, as you may identify a rare subset of cells that form their own cluster at high alpha that represent a state-fate correlation.
+
+Now let's heatmap the maximum fidelity of all top cluster markers over alpha.
 
 ```{r hm}
 
@@ -455,6 +466,7 @@ pheatmap(m, cluster_cols = FALSE)
 
 ```
 
+Clearly some of the markers like *CSK2* and *IFIT3* that are top cluster markers in transcriptome only clustering fall off when lineage information is added, and new markers, such as *KCNMA1* pop up. Thus, this alternative clustering scheme has incorporated the ground truth of lineage barcodes into our naive clustering approach and revealed alternative clusters and markers with retained fidelity.
 
 ## Part 9: UMAP and Warp Factor the data {#p9}
 
@@ -528,7 +540,7 @@ pl <- lapply(coln, function(cs){
   um %>% data.table::setnames(cs, "group")
 
   p <- ggplot(um, aes(x = UMAP_1, y = UMAP_2)) +
-    geom_point(aes(color = group), size = 0.3, alpha = 0.5) +
+    geom_point(aes(color = group), size = 1, alpha = 1) +
     scale_color_manual(values = c25) +
     ttheme +
     theme_void() +
@@ -539,15 +551,17 @@ pl <- lapply(coln, function(cs){
 
 })
 
-plg <- cowplot::plot_grid(plotlist = pl, nrow = 1)
+plg <- cowplot::plot_grid(plotlist = pl, nrow = 1, labels = "Default UMAP", scale = 0.9)
 
 ```
 
-```{r plg, echo = FALSE}
+```{r plg, fig.height = 3, fig.width = 12, echo = FALSE}
 
 plg
 
 ```
+
+Now we know how our clusters look applied to the UMAP based only on the PCA. Let's warp the UMAP and look at barcode separation and decide where to set our warp factor and check our clusters again.
 
 ```{r warp1, eval = FALSE}
 
@@ -571,25 +585,14 @@ umaps[, Barcode :=
         ifelse(rn %>% unique %>% length > 1, Barcode, "Singlet"),
         by = "Barcode"]
 
-ums <- lapply(umaps[, Barcode %>% unique], function(g){
-
-  ump <- umaps %>% data.table::copy()
-
-  ump[Barcode == g, col := "00"]
-
-  ump[Barcode != g, col := "ZZ"]
-
-  um <- ggplot(ump, aes(x = UMAP_1, y = UMAP_2)) +
-    geom_point(aes(col = col), size = 0.3, alpha = 0.5) +
+# make a plot faceted by warp factor
+ums <- ggplot(umaps, aes(x = UMAP_1, y = UMAP_2)) +
+    geom_point(aes(col = Barcode), size = 0.3, alpha = 0.5) +
     facet_wrap(~warp) +
-    scale_color_manual(values = c("grey", cw_colors[2])) +
+    scale_color_manual(values = c25) +
     ttheme +
     theme_void() +
-    theme(legend.position = "none")
-
-    return(um)
-
-})
+    theme(legend.position = "bottom")
 
 ```
 
@@ -601,11 +604,9 @@ wfs <- c(0, 2, 4, 6, 8, 10)
 # get our warped UMAPs
 umaps <- lapply(wfs, function(s){
 
-  mo <- barcode_warp(pca, bt, s)
+  uws <- engage_warp(pca, bt, s)
 
-  um <- umap_matrix(mo)
-
-  um[, warp := s]
+  return(uws)
 
 }) %>% data.table::rbindlist()
 
@@ -618,27 +619,6 @@ umaps[, Barcode :=
         ifelse(rn %>% unique %>% length > 1, Barcode, "Singlet"),
         by = "Barcode"]
 
-# ums <- lapply(umaps[, Barcode %>% unique], function(g){
-#
-#   ump <- umaps %>% data.table::copy()
-#
-#   ump[Barcode == g, col := "00"]
-#
-#   ump[Barcode != g, col := "ZZ"]
-#
-#   um <- ggplot(ump, aes(x = UMAP_1, y = UMAP_2)) +
-#     geom_point(aes(col = col), size = 0.3, alpha = 0.5) +
-#     facet_wrap(~warp) +
-#     scale_color_manual(values = c(cw_colors[2], "gray")) +
-#     ttheme +
-#     theme_void() +
-#     theme(legend.position = "none") +
-#     ggtitle(paste("Barcode", g))
-#
-#     return(um)
-#
-# })
-
 ums <- ggplot(umaps, aes(x = UMAP_1, y = UMAP_2)) +
     geom_point(aes(col = Barcode), size = 0.3, alpha = 0.5) +
     facet_wrap(~warp) +
@@ -649,10 +629,124 @@ ums <- ggplot(umaps, aes(x = UMAP_1, y = UMAP_2)) +
 
 ```
 
-Let's have a look at how our UMAP looks with increasing warp factor for each barcode:
+Let's have a look at how our UMAP looks with increasing warp factor colored by barcode:
 
 ```{r um1}
 
 ums
 
 ```
+
+A warp factor of 4 looks interesting. It separates the barcodes nicely without too many barcodes splitting off completely. Lets look at our clusters at this warp factor.
+
+```{r warp4, include = FALSE}
+
+# Umap at warp 4
+um_wf4 <- engage_warp(pca, bt, s = 4)
+
+um_wf4 <- merge(um_wf4, clw, by = "rn")
+
+pl <- lapply(coln, function(cs){
+
+  um <- um_wf4 %>% data.table::copy()
+
+  um %>% data.table::setnames(cs, "group")
+
+  p <- ggplot(um, aes(x = UMAP_1, y = UMAP_2)) +
+    geom_point(aes(color = group), size = 1, alpha = 1) +
+    scale_color_manual(values = c25) +
+    ttheme +
+    theme_void() +
+    theme(legend.position = "none") +
+    ggtitle(paste(cs, "clusters"))
+
+  return(p)
+
+})
+
+plg4 <- cowplot::plot_grid(plotlist = pl, nrow = 1, labels = "UMAP: Warp 4", scale = 0.9)
+
+```
+
+```{r warp42, eval = FALSE}
+
+# Umap at warp 4
+um_wf4 <- engage_warp(pca, bt, s = 4)
+
+um_wf4 <- merge(um_wf4, clw, by = "rn")
+
+pl <- lapply(coln, function(cs){
+
+  um <- um_wf4 %>% data.table::copy()
+
+  um %>% data.table::setnames(cs, "group")
+
+  p <- ggplot(um, aes(x = UMAP_1, y = UMAP_2)) +
+    geom_point(aes(color = group), size = 1, alpha = 1) +
+    scale_color_manual(values = c25) +
+    ttheme +
+    theme_void() +
+    theme(legend.position = "none") +
+    ggtitle(paste(cs, "clusters"))
+
+  return(p)
+
+})
+
+cowplot::plot_grid(plotlist = pl, nrow = 1)
+
+```
+
+For direct comparison, here are the clusters on the original UMAP:
+
+```{r plg_2, fig.height = 3, fig.width = 12, echo = FALSE}
+
+plg
+
+```
+
+These are our clusters overlaid on the warped UMAP that we just generated:
+
+```{r plg4, fig.height = 3, fig.width = 12, echo = FALSE}
+
+plg4
+
+```
+
+Finally, let's look at how those two markers we identified appear in both UMAP settings.
+
+```{r umimap, fig.height = 6.5, fig.width = 6}
+
+# get UMI counts
+umis <- cm[, c(alpha_enhanced, transcriptome_only)] %>%
+  data.table::as.data.table(keep.rownames = TRUE) %>%
+  melt(id.vars = "rn", value.name = "scaled UMI", variable.name = "Gene")
+
+# add warp factor column to this table
+um_tr[, warp := 0]
+
+# combine table rows
+um <- rbindlist(list(um_tr, um_wf4), use.names = TRUE, fill = TRUE)
+
+# merge
+um <- merge(um, umis, by = "rn")
+
+um[, warp_factor := paste("Warp", warp)]
+
+um %>% setkey(`scaled UMI`)
+
+ggplot(um, aes(x = UMAP_1, y = UMAP_2)) +
+  geom_point(aes(color = `scaled UMI`), size = 1, alpha = 1) +
+  facet_wrap(warp_factor ~ Gene) +
+  scale_color_gradient(low = "grey90", high = "darkblue") +
+  ttheme +
+  theme_void() +
+  theme(legend.position = "bottom")
+
+```
+
+You can see how the transcriptome only marker expression is more spread out on the warped UMAP. The alpha enhanced marker is less spread out on the warped UMAP, and from comparison to the plots above you can see that the clusters also reconfigure to help make this a stronger marker.
+
+## Conclusion
+
+Thank you for using the BarCluster tutorial! We generated our hybrid clusters, chose alpha values for analysis, visualized reorganization, identified markers, and modified the UMAP visualization to better reflect the incorporation of lineage barcode information. For more information, check out the package [ReadMe](https://github.com/leeprichman/BarCluster) and [our paper.](link)

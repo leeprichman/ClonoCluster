@@ -95,7 +95,7 @@ FindAllMarkers_Seurat <- function(so, clust, method = "roc", ...){
 
     de %<>% data.table::as.data.table(keep.rownames = TRUE)
 
-    dt[, alpha := a]
+    de[, alpha := a]
 
     return(de)
 
