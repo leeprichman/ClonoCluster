@@ -15,3 +15,5 @@ cm <- file.path(dir, "YG1_sample_genes.txt") %>% data.table::fread() %>% .[1:50]
 bt <- file.path(dir, "YG1_sample_barcodes.txt") %>% data.table::fread()
 
 tdir <- file.path(dir, "test_validation")
+
+oldseed <- .Random.seed

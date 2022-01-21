@@ -62,13 +62,13 @@ ttheme <- theme(axis.title = element_text(size = 8, face = "bold", color = "blac
 #' @md
 FindAllMarkers_Seurat <- function(so, clust, method = "roc", ...){
 
-  if (class(o)[1] == "character"){
+  if (class(so)[1] == "character"){
 
-    obj <- o %>% readRDS()
+    obj <- so %>% readRDS()
 
   } else{
 
-    obj <- o
+    obj <- so
 
   }
 
