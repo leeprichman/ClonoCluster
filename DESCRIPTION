@@ -1,5 +1,5 @@
 Package: BarCluster
-Title: Lineage informed single cell RNA sequencing clustering
+Title: Lineage barcodes as ground truth clusters in single cell RNA sequencing
 Version: 0.0.1
 Authors@R:
     c(person(given = c("Lee", "P."),

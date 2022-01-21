@@ -5,6 +5,8 @@ date: "01/11/2022"
 output: html_document
 ---
 
+<!-- sudo Rscript -e 'rmarkdown::render("Tutorial.Rmd")' -->
+
 ```{r setup, include=FALSE}
 
 knitr::opts_chunk$set(echo = TRUE)
@@ -160,7 +162,7 @@ head(clust)
 
 These are your hybrid clusters. Let's compute some confusion matrix statistics and plot them just so we can see the trends. Removing singlets makes the visualization much better so we will do that as well.
 
-```{r confusion, message = FALSE}
+```{r confusion, message = FALSE, results = FALSE}
 
 # loop over alphas
 confusion <- lapply(clust[, alpha %>% unique], function(a){
@@ -179,6 +181,9 @@ confusion <- lapply(clust[, alpha %>% unique], function(a){
 # get barcode ids of singlets
 singlets <- bt[, .N, by = Barcode] %>% .[N == 1, Barcode]
 
+```
+
+```{r confplot}
 # plot the cohen's kappa
 ggplot(confusion[!barcode %chin% singlets], # ignore singlets
   aes(x = as.factor(alpha), y = cohens_k)) +
@@ -659,7 +664,8 @@ ums <- ggplot(umaps, aes(x = UMAP_1, y = UMAP_2)) +
     scale_color_manual(values = c25) +
     ttheme +
     theme_void() +
-    theme(legend.position = "bottom")
+    theme(legend.position = "bottom") +
+    guides(color = guide_legend(override.aes = list(size = 3)))
 
 ```
 
