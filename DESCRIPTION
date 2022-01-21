@@ -32,7 +32,9 @@ Imports:
   irlba,
   ROCR,
   ggalluvial,
-  utils
+  utils,
+  testthat,
+  digest
 LinkingTo: Rcpp, RcppEigen, RcppProgress
 RoxygenNote: 7.1.1
 Encoding: UTF-8
