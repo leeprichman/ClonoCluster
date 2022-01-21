@@ -16,7 +16,7 @@ FindAllMarkers_Seurat(so, clust, method = "roc", ...)
 \item{...}{All other arguments passed to \code{Seurat::FindAllMarkers}.}
 }
 \value{
-A data.table of the output.
+A data.table of the \code{Seurat::FindAllMarkers} output.
 }
 \description{
 A wrapper to call Seurat to FindAllMarkers on given groups.

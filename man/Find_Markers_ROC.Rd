@@ -12,7 +12,7 @@ Find_Markers_ROC(dl, cm)
 \item{cm}{Matrix. A count matrix.}
 }
 \value{
-A table of marker AUC, and thresholds for all clusters.
+A table of marker AUCs and thresholds for all clusters.
 }
 \description{
 Fast AUC calculation wrapper for clusters.

@@ -16,7 +16,7 @@
 #' @param ltype One of c("label", "text"). Passed as the geom to annotation. Default is "label"
 #' @param reverse Boolean. Default TRUE, return plot colored by clusters and barcodes.
 #'
-#' @return Returns a ggplot object or two of the Sankey Plot.
+#' @return Returns a ggplot object (or two if reverse == TRUE) of the Sankey Plot.
 #'
 #' @export Plot_alluvia
 #' @md

@@ -1,7 +1,7 @@
 ## ---- Plot_alluvia_counts
 #' Plot a Sankey Diagram from a table of unique IDs, and two or more columns indicating membership groups to progress through, in order.
 #'
-#' @param dl A data table, with three columns, c("rn", "Group", "alpha").
+#' @param dl A data table, with at least three columns, c("rn", "Group", "alpha"), from `barcluster`.
 #' @param counts A matrix with one count column and rownames equivalent to "rn".
 #' @param col_start Character. Starting value for color gradient, default is "gray100".
 #' @param col_end Character. Ending value for color gradient, default is "darkblue".

@@ -3,11 +3,11 @@
 #'
 #' @param irl Matrix. Principal components matrix, output from `BarCluster::irlba_wrap`.
 #' @param bt Data table. Barcode table of two columns cell IDs ("rn") and barcodes ("Barcode").
-#' @param alpha Numeric. Alpha parameter or list of values to iterate over. Ranges from 0 to 1. A value of zero reflects only transcriptome edges, a value of one reflects only barcodes.
+#' @param alpha Numeric. Alpha parameter or vector of values to iterate over. Ranges from 0 to 1. A value of zero reflects only transcriptome edges, a value of one reflects only barcodes.
 #' @param beta Numeric. Exponent on alpha to adjust curve sloping. Default is 0.1.
 #' @param res Numeric. Resolution parameter passed to community detection algorithm.
 #' @param method c("fast", "index"), how the barcode matrix is made, default is fast, if its going too slow try "index".
-#' @param ... Additional arguments passed to `RunModularityClustering`.
+#' @param ... Additional arguments passed to `Seurat:::RunModularityClustering`.
 #'
 #' @import magrittr
 #' @import data.table
@@ -28,7 +28,7 @@
 #' @import testthat
 #' @import digest
 #'
-#' @return A long format data table with three columns, cell ID ("rn"), alpha value, beta value, and cluster assignment ("Group").
+#' @return A long format data table with four columns, cell ID ("rn"), alpha value, beta value, and cluster assignment ("Group").
 #'
 #' @export barcluster
 #' @md

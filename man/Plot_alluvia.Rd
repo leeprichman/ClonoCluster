@@ -51,7 +51,7 @@ Plot_alluvia(
 \item{cols}{Character. Vector of colors values, default is c25.}
 }
 \value{
-Returns a ggplot object or two of the Sankey Plot.
+Returns a ggplot object (or two if reverse == TRUE) of the Sankey Plot.
 }
 \description{
 Plot a Sankey Diagram from a table of unique IDs, and two or more columns indicating membership groups to progress through, in order.

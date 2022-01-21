@@ -3,6 +3,8 @@
 #'
 #' @param dt A data.table to be flipped.
 #'
+#' @return A data table that has been transposed
+#'
 #' @export tdt
 #' @md
 tdt <- function(dt){
@@ -23,6 +25,8 @@ tdt <- function(dt){
 #' Convert a data.table to matrix.
 #'
 #' @param dt A data.table to be converted to a matrix.
+#'
+#' @return A matrix from the data.table, with the first table column as rownames of the matrix.
 #'
 #' @export dt2m
 #' @md
@@ -56,7 +60,7 @@ ttheme <- theme(axis.title = element_text(size = 8, face = "bold", color = "blac
 #' @param method Passed to the `test.use` argument of `Seurat::FindAllMarkers`, default is "roc".
 #' @param ... All other arguments passed to `Seurat::FindAllMarkers`.
 #'
-#' @return A data.table of the output.
+#' @return A data.table of the `Seurat::FindAllMarkers` output.
 #'
 #' @export FindAllMarkers_Seurat
 #' @md

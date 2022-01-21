@@ -9,6 +9,9 @@ dt2m(dt)
 \arguments{
 \item{dt}{A data.table to be converted to a matrix.}
 }
+\value{
+A matrix from the data.table, with the first table column as rownames of the matrix.
+}
 \description{
 Convert a data.table to matrix.
 }

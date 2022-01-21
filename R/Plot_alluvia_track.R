@@ -1,7 +1,7 @@
 ## ---- Plot_alluvia_track
-#' Plot a Sankey Diagram from a table of unique IDs, and two or more columns indicating membership groups to progress through, in order.
+#' Plot a Sankey Diagram and track a list of cellIDs.
 #'
-#' @param dl A data table, with three columns, c("rn", "Group", "alpha").
+#' @param dl A data table, with three columns, c("rn", "Group", "alpha"), from `barcluster`.
 #' @param ids List. A list of character vectors containing rownames in dl (cellIDs) for each group to be tracked.
 #' @param cols Character. Vector of colors values of length equal to the number of groups to be tracked, node colors.
 #' @param alluvia_cols Character. Vector of colors values of length equal to the number of groups to be tracked, alluvium colors, default is same as `cols`.
@@ -17,7 +17,7 @@
 #' @param ltype One of c("label", "text"). Passed as the geom to annotation. Default is "label"
 #' @param orientation One of c("top", "bottom"), where colored rectangles will be stacked on the nodes. Default is "bottom".
 #'
-#' @return Returns a ggplot object or two of the Sankey Plot.
+#' @return Returns a ggplot object of the Sankey Plot.
 #'
 #' @export Plot_alluvia_track
 #' @md

@@ -9,6 +9,9 @@ tdt(dt)
 \arguments{
 \item{dt}{A data.table to be flipped.}
 }
+\value{
+A data table that has been transposed
+}
 \description{
 Flip a count matrix data.table.
 }

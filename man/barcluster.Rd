@@ -19,7 +19,7 @@ barcluster(
 
 \item{bt}{Data table. Barcode table of two columns cell IDs ("rn") and barcodes ("Barcode").}
 
-\item{alpha}{Numeric. Alpha parameter or list of values to iterate over. Ranges from 0 to 1. A value of zero reflects only transcriptome edges, a value of one reflects only barcodes.}
+\item{alpha}{Numeric. Alpha parameter or vector of values to iterate over. Ranges from 0 to 1. A value of zero reflects only transcriptome edges, a value of one reflects only barcodes.}
 
 \item{beta}{Numeric. Exponent on alpha to adjust curve sloping. Default is 0.1.}
 
@@ -27,10 +27,10 @@ barcluster(
 
 \item{method}{c("fast", "index"), how the barcode matrix is made, default is fast, if its going too slow try "index".}
 
-\item{...}{Additional arguments passed to \code{RunModularityClustering}.}
+\item{...}{Additional arguments passed to \code{Seurat:::RunModularityClustering}.}
 }
 \value{
-A long format data table with three columns, cell ID ("rn"), alpha value, beta value, and cluster assignment ("Group").
+A long format data table with four columns, cell ID ("rn"), alpha value, beta value, and cluster assignment ("Group").
 }
 \description{
 Return hybrid clusters for a range of alpha values.

@@ -27,7 +27,7 @@ Welcome to BarCluster. This RMarkDown file is a tutorial using sample data to ge
 
   2. [Run PCA](#p2) on our count matrix.
 
-  3. [Create our hybrid clusters](#p3) across a range of values.
+  3. [Create our hybrid clusters](#p3) across a range of values and plot concordance.
 
   4. [Determine alpha values](#p4) for analysis based on cluster number at fixed resolution.
 
@@ -158,7 +158,41 @@ head(clust)
 
 ```
 
-These are your hybrid clusters.
+These are your hybrid clusters. Let's compute some confusion matrix statistics and plot them just so we can see the trends. Removing singlets makes the visualization much better so we will do that as well.
+
+```{r confusion, message = FALSE}
+
+# loop over alphas
+confusion <- lapply(clust[, alpha %>% unique], function(a){
+
+  # function to compute confusion statistics
+  ct <- cast_confusion(clust[alpha == a, .(rn, Group)], # subsetted, 2 column table is the input
+                        bt) # barcode assignments
+
+  # append alpha value                      
+  ct[, alpha := a]
+
+  return(ct)
+
+}) %>% data.table::rbindlist() # merge to one big table
+
+# get barcode ids of singlets
+singlets <- bt[, .N, by = Barcode] %>% .[N == 1, Barcode]
+
+# plot the cohen's kappa
+ggplot(confusion[!barcode %chin% singlets], # ignore singlets
+  aes(x = as.factor(alpha), y = cohens_k)) +
+  geom_boxplot(fill = "dodgerblue") +
+  theme_bw() +
+  ttheme +
+  theme(plot.title = element_text(size = 12)) +
+  ggtitle("Concordance plot") +
+  xlab("\u03B1") +
+  ylab("Cohen's \u03BA")
+
+```
+
+By alpha = 0.5, we have pretty much maxed out our concordance. Something to keep in mind when we choose target alpha values based on the number of clusters in the next step.
 
 ## Part 4: Identify target alpha values {#p4}
 

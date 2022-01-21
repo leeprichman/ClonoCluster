@@ -2,7 +2,7 @@
 % Please edit documentation in R/barcluster_model.R
 \name{barcluster_model}
 \alias{barcluster_model}
-\title{Return the barcluster graph for clustering.}
+\title{Return the barcluster network graph for clustering.}
 \usage{
 barcluster_model(alpha, beta = 0.1, m, nm)
 }
@@ -13,11 +13,11 @@ barcluster_model(alpha, beta = 0.1, m, nm)
 
 \item{m}{Object of class \code{dgCMatrix}, the graph of transcriptome edges derived from SNN jaccard index. Usually from \code{Seurat::FindNeighbors}.}
 
-\item{nm}{Output of \code{build_barcode_matrix}.}
+\item{nm}{Output of \code{build_barcode_matrix} or \code{build_barcode_matrix_fast}.}
 }
 \value{
-A sparse matrix of class \code{dgCMatrix} suitable for \code{RunModularityClustering}.
+A sparse matrix of class \code{dgCMatrix} suitable for \code{Seurat:::RunModularityClustering}.
 }
 \description{
-Return the barcluster graph for clustering.
+Return the barcluster network graph for clustering.
 }

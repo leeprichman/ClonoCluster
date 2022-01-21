@@ -21,7 +21,7 @@ Plot_alluvia_counts(
 )
 }
 \arguments{
-\item{dl}{A data table, with three columns, c("rn", "Group", "alpha").}
+\item{dl}{A data table, with at least three columns, c("rn", "Group", "alpha"), from \code{barcluster}.}
 
 \item{counts}{A matrix with one count column and rownames equivalent to "rn".}
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Plot_alluvia_track.R
 \name{Plot_alluvia_track}
 \alias{Plot_alluvia_track}
-\title{Plot a Sankey Diagram from a table of unique IDs, and two or more columns indicating membership groups to progress through, in order.}
+\title{Plot a Sankey Diagram and track a list of cellIDs.}
 \usage{
 Plot_alluvia_track(
   dl,
@@ -23,7 +23,7 @@ Plot_alluvia_track(
 )
 }
 \arguments{
-\item{dl}{A data table, with three columns, c("rn", "Group", "alpha").}
+\item{dl}{A data table, with three columns, c("rn", "Group", "alpha"), from \code{barcluster}.}
 
 \item{ids}{List. A list of character vectors containing rownames in dl (cellIDs) for each group to be tracked.}
 
@@ -54,8 +54,8 @@ Plot_alluvia_track(
 \item{orientation}{One of c("top", "bottom"), where colored rectangles will be stacked on the nodes. Default is "bottom".}
 }
 \value{
-Returns a ggplot object or two of the Sankey Plot.
+Returns a ggplot object of the Sankey Plot.
 }
 \description{
-Plot a Sankey Diagram from a table of unique IDs, and two or more columns indicating membership groups to progress through, in order.
+Plot a Sankey Diagram and track a list of cellIDs.
 }

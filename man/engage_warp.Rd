@@ -2,7 +2,7 @@
 % Please edit documentation in R/barcode_warp.R
 \name{engage_warp}
 \alias{engage_warp}
-\title{Warp principal components and return umap.}
+\title{Warp principal components and return modified umap.}
 \usage{
 engage_warp(pca, bt, s, ...)
 }
@@ -19,5 +19,5 @@ engage_warp(pca, bt, s, ...)
 UMAP output from the warped PCA.
 }
 \description{
-Warp principal components and return umap.
+Warp principal components and return modified umap.
 }
