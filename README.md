@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/leeprichman/BarCluster/branch/main/graph/badge.svg?token=GBJDQCGAWZ)](https://codecov.io/gh/leeprichman/BarCluster)
+
 # BarCluster
 Lineage informed scRNAseq clustering method
 
