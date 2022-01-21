@@ -1,6 +1,6 @@
 test_that("Plot alluvia", {
 
-  to <- file.path(tdir, "test_barcluser_output.tsv") %>% data.table::fread()
+  to <- file.path(tdir, "test_barcluster_output.tsv") %>% data.table::fread()
 
   p <- Plot_alluvia(to[alpha < 1], bt, ltype = "text")
 
@@ -11,13 +11,13 @@ test_that("Plot alluvia", {
   pdigest <- digest::digest(p, algo = "md5")
 
   testthat::expect_equal(pdigest,
-  "adfa7a3eafe01f56434035a0c49cdb5e")
+  "1e862583de4d4ee36e82124a57b37a7a")
 
 })
 
 test_that("Plot alluvia track", {
 
-  to <- file.path(tdir, "test_barcluser_output.tsv") %>% data.table::fread()
+  to <- file.path(tdir, "test_barcluster_output.tsv") %>% data.table::fread()
 
   p <- Plot_alluvia_track(to[alpha < 1],
               ids = list(bt[Barcode == "C9", rn],
@@ -31,13 +31,13 @@ test_that("Plot alluvia track", {
   pdigest <- digest::digest(p, algo = "md5")
 
   testthat::expect_equal(pdigest,
-  "2de87589b73f7b0d9908b8663f1d1321")
+  "6fd7d816f5cdb787f4ef831eacee2066")
 
 })
 
 test_that("Plot alluvia counts", {
 
-  to <- file.path(tdir, "test_barcluser_output.tsv") %>% data.table::fread()
+  to <- file.path(tdir, "test_barcluster_output.tsv") %>% data.table::fread()
 
   p <- Plot_alluvia_counts(to[alpha < 1],
               counts = cm[, "ACTA2"] %>% as.matrix,
@@ -48,6 +48,6 @@ test_that("Plot alluvia counts", {
   pdigest <- digest::digest(p, algo = "md5")
 
   testthat::expect_equal(pdigest,
-  "d2978fe22a31d30bc91b8b3958c7e5b9")
+  "145ec2add40470af7fc3d0f603527c96")
 
 })
