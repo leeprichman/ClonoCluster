@@ -5,11 +5,11 @@
 ```
 
 ######                 #####                                           
-#     #   ##   #####  #     # #      #    #  ####  ##### ###### #####  
+#     #   ##   #####  #       #      #    #  ####  ##### ###### #####  
 #     #  #  #  #    # #       #      #    # #        #   #      #    #
 ######  #    # #    # #       #      #    #  ####    #   #####  #    #
 #     # ###### #####  #       #      #    #      #   #   #      #####  
-#     # #    # #   #  #     # #      #    # #    #   #   #      #   #  
+#     # #    # #   #  #       #      #    # #    #   #   #      #   #  
 ######  #    # #    #  #####  ######  ####   ####    #   ###### #    #     
 
 ```
@@ -212,6 +212,16 @@ Check out the [tutorial](https://github.com/leeprichman/Barcluster/Tutorial.html
   * Marker fidelity heatmaps with `pheatmap`
 
   * Overlay clusters and UMI counts on warped UMAPs
+
+## Testing
+
+BarCluster is supported by unit testing with `testthat` and [codecov.io](about.codecov.io). To test the package after install:
+
+```
+
+testthat::test_package("BarCluster")
+
+```
 
 ## Citation
 

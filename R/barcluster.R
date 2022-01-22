@@ -26,7 +26,6 @@
 #' @import ggalluvial
 #' @import utils
 #' @import testthat
-#' @import digest
 #'
 #' @return A long format data table with four columns, cell ID ("rn"), alpha value, beta value, and cluster assignment ("Group").
 #'

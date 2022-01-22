@@ -33,8 +33,7 @@ Imports:
   ROCR,
   ggalluvial,
   utils,
-  testthat,
-  digest
+  testthat
 RoxygenNote: 7.1.1
 Encoding: UTF-8
 Config/testthat/edition: 3
