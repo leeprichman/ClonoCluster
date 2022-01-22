@@ -11,7 +11,7 @@ Find_Markers_ROC(dl, cm, n_threads = 1)
 
 \item{cm}{Matrix. A count matrix.}
 
-\item{n_threads}{Integer. Passed to \code{n.cores} for \code{parallel::mclapply}}
+\item{n_threads}{Integer. Passed to \code{mc.cores} for \code{parallel::mclapply}}
 }
 \value{
 A table of marker AUCs and thresholds for all clusters.
