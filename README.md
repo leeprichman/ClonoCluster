@@ -3,16 +3,19 @@
 **Docker badge goes here**
 
 ```
-:::::::::      :::     :::::::::   ::::::::  :::       :::    :::  :::::::: ::::::::::: :::::::::: :::::::::
-:+:    :+:   :+: :+:   :+:    :+: :+:    :+: :+:       :+:    :+: :+:    :+:    :+:     :+:        :+:    :+:
-+:+    +:+  +:+   +:+  +:+    +:+ +:+        +:+       +:+    +:+ +:+           +:+     +:+        +:+    +:+  
-+#++:++#+  +#++:++#++: +#++:++#:  +#+        +#+       +#+    +:+ +#++:++#++    +#+     +#++:++#   +#++:++#:    
-+#+    +#+ +#+     +#+ +#+    +#+ +#+        +#+       +#+    +#+        +#+    +#+     +#+        +#+    +#+    
-#+#    #+# #+#     #+# #+#    #+# #+#    #+# #+#       #+#    #+# #+#    #+#    #+#     #+#        #+#    #+#     
-#########  ###     ### ###    ###  ########  ########## ########   ########     ###     ########## ###    ###      
+
+######                 #####                                           
+#     #   ##   #####  #     # #      #    #  ####  ##### ###### #####  
+#     #  #  #  #    # #       #      #    # #        #   #      #    #
+######  #    # #    # #       #      #    #  ####    #   #####  #    #
+#     # ###### #####  #       #      #    #      #   #   #      #####  
+#     # #    # #   #  #     # #      #    # #    #   #   #      #   #  
+######  #    # #    #  #####  ######  ####   ####    #   ###### #    #     
 
 ```
 *Lineage barcodes as ground truth clusters in single cell RNA sequencing*
+
+![](https://github.com/leeprichman/BarCluster/blob/main/readme_fig.png)
 
 Welcome to BarCluster. To get started, you will need:
 
@@ -66,7 +69,7 @@ R
 
 ```
 
-Now you may follow the [walkthrough](#walk) or [tutorial](https://github.com/leeprichman/Barcluster/Tutorial.html) below. At the end of the analysis you may recover output and shut down the container with:
+Now you may follow the [tutorial](https://github.com/leeprichman/Barcluster/Tutorial.html) or [walkthrough](###walk) below. At the end of the analysis you may recover output and shut down the container with:
 
 ```
 docker cp $cID:/myoutput.txt ~/myagdockeroutput.txt
@@ -77,7 +80,7 @@ docker rm $cID
 
 ```
 
-### Quickstart guide {#walk}
+### Quickstart guide {###walk}
 
 #### Prep your input data
 
@@ -142,17 +145,29 @@ clust <- barcluster(pca, bt, alpha = seq(0, 1, by = 0.1), beta = 0.1, res = 1)
 
 #### Sankey visualization
 
-Let's make a Sankey plot of the data. We will use the top 15 barcodes so that we can take the plot all the way to alpha = 1 without being unable to interpret it.
+Let's make a Sankey plot of the data. We will use the top 10 barcodes so that we can take the plot all the way to alpha = 1 without being unable to interpret it.
+
+```
+# get top 10 barcodes
+wl <- bt[, .N, by = "Barcode"] %>% .[order(-N), Barcode[1:10]]
+
+# get the cell ids from the top 10 barcodes
+wl <- bt[Barcode %chin% wl, rn]
+
+# plot alluvia
+Plot_alluvia(clust[rn %chin% wl], # subset on cell IDs
+              bt[rn %chin% wl], # subset on cell IDs
+              col = cw_colors, # provided vector of colors
+              border_size = 0.5,
+              label_nodes = FALSE,
+              xlab = "\u03B1", # unicode for alpha
+              ylab = "# of cells")
 
 ```
 
-```
+This is a sample of what this looks like for the top 10 barcodes in the tutorial sample data:
 
-
-
-This is a sample of what this looks like for the top 15 barcodes in the data.
-
-![](https://github.com/leeprichman/BarCluster_paper/Figs/Long_alluvia/YG3_alluvia.png)
+![](https://github.com/leeprichman/BarCluster/blob/main/sample_sankey.png)
 
 #### UMAP and Warp Factor
 
@@ -160,14 +175,27 @@ You can also generate UMAPs projections for visualization:
 
 ```
 
+# warp factor of 0 (default UMAP)
 umap_wf0 <- engage_warp(pca, bt, 0)
 
+# warp factor of 5
 umap_wf5 <- engage_warp(pca, bt, 5)
 
+# warp factor of 10 (maximum)
 umap_wf10 <- engage_warp(pca, bt, 10)
+
+# combine to one table
+umap <- list(umap_wf0, umap_wf5, umap_wf10) %>% data.table::rbindlist()
+
+# plot
+ggplot(umap, aes(x = UMAP_1, UMAP_2)) +
+  geom_point(col = "dodgerblue") +
+  facet_wrap(~warp, nrow = 1) +
+  theme_void()
 
 ```
 
+![](https://github.com/leeprichman/BarCluster/blob/main/sample_warps.png)
 
 #### Other functions
 
