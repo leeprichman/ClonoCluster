@@ -276,7 +276,7 @@ In the first plot, you can see that the purple transcriptome cluster almost imme
 
 ## Part 6: Identify cluster markers. {#p6}
 
-Let's find the top cluster marker per cluster at each level. We will do this for ROC analysis for in vs out of cluster cells across all genes in the count matrix. I've written a function to make this easier. This is not fast however. If you already have a Seurat object, this may be quicker by inputting clusters as the active identity and using the `Seurat::FindAllMarkers` function and I've created a wrapper for that too. Scroll to the next code chunk.
+Let's find the top cluster marker per cluster at each level. We will do this for ROC analysis for in vs out of cluster cells across all genes in the count matrix. I've written a function to make this easier. This is not fast however. You may run with a higher `n_threads` argument if you want to spead it up. Alternatively, if you already have a Seurat object, this may be quicker by inputting clusters as the active identity and using the `Seurat::FindAllMarkers` function and I've created a wrapper for that too. Scroll to the next code chunk.
 
 If you want to skip running this step and just go right to the discovered markers for the sample data, see the hashed annotations in this code.
 
@@ -284,7 +284,7 @@ If you want to skip running this step and just go right to the discovered marker
 
 # to skip this step:
 # auc_table <- data.table::fread(file.path(dir, "YG1_markers.txt"))
-auc_all <- Find_Markers_ROC(clust[alpha %in% notable_alphas], cm)
+auc_all <- Find_Markers_ROC(clust[alpha %in% notable_alphas], cm, n_threads = 1)
 
 # you can save this table with:
 # auc_table %>% data.table::fwrite("mytable.txt")

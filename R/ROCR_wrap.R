@@ -62,13 +62,14 @@ ROCR_wrap <- function(x, y, return_curve = FALSE){
 #'
 #' @param dl A data.table of cluster assignments, output from `barcluster`, with minimum columns c("rn", "Group", "alpha").
 #' @param cm Matrix. A count matrix.
+#' @param n_threads Integer. Passed to `n.cores` for `parallel::mclapply`
 #'
 #' @return A table of marker AUCs and thresholds for all clusters.
 #'
 #' @export Find_Markers_ROC
 #' @md
 
-Find_Markers_ROC <- function(dl, cm){
+Find_Markers_ROC <- function(dl, cm, n_threads = 1){
 
   fast_comp <- function(v, x, y){
 
@@ -96,7 +97,7 @@ Find_Markers_ROC <- function(dl, cm){
 
     tr <- dl[alpha == a]
 
-    tr_auc <- lapply(tr[, Group %>% unique], function(go){
+    tr_auc <- parallel::mclapply(tr[, Group %>% unique], function(go){
 
       utils::setTxtProgressBar(pb, which(go == tr[, Group %>% unique]))
 
@@ -124,7 +125,7 @@ Find_Markers_ROC <- function(dl, cm){
 
       return(do)
 
-    }) %>% data.table::rbindlist()
+    }, n.cores = n_threads) %>% data.table::rbindlist()
 
     tr_auc[, alpha := a]
 

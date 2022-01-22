@@ -4,12 +4,14 @@
 \alias{Find_Markers_ROC}
 \title{Fast AUC calculation wrapper for clusters.}
 \usage{
-Find_Markers_ROC(dl, cm)
+Find_Markers_ROC(dl, cm, n_threads = 1)
 }
 \arguments{
 \item{dl}{A data.table of cluster assignments, output from \code{barcluster}, with minimum columns c("rn", "Group", "alpha").}
 
 \item{cm}{Matrix. A count matrix.}
+
+\item{n_threads}{Integer. Passed to \code{n.cores} for \code{parallel::mclapply}}
 }
 \value{
 A table of marker AUCs and thresholds for all clusters.
