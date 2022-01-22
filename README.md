@@ -13,7 +13,7 @@
 ######  #    # #    #  #####  ######  ####   ####    #   ###### #    #     
 
 ```
-*Lineage barcodes as ground truth clusters in single cell RNA sequencing*
+**BarCluster:** *Lineage barcodes as ground truth clusters in single cell RNA sequencing*
 
 ![](https://github.com/leeprichman/BarCluster/blob/main/readme_fig.png)
 
@@ -69,7 +69,7 @@ R
 
 ```
 
-Now you may follow the [tutorial](https://github.com/leeprichman/Barcluster/Tutorial.html) or [walkthrough](###walk) below. At the end of the analysis you may recover output and shut down the container with:
+Now you may follow the [tutorial](https://github.com/leeprichman/Barcluster/Tutorial.html) or walkthrough below. At the end of the analysis you may recover output and shut down the container with:
 
 ```
 docker cp $cID:/myoutput.txt ~/myagdockeroutput.txt
@@ -80,7 +80,7 @@ docker rm $cID
 
 ```
 
-### Quickstart guide {###walk}
+### Quickstart guide
 
 #### Prep your input data
 
@@ -167,7 +167,7 @@ Plot_alluvia(clust[rn %chin% wl], # subset on cell IDs
 
 This is a sample of what this looks like for the top 10 barcodes in the tutorial sample data:
 
-![](https://github.com/leeprichman/BarCluster/blob/main/sample_sankey.png)
+![](https://github.com/leeprichman/BarCluster/blob/main/sankey_sample.png)
 
 #### UMAP and Warp Factor
 
