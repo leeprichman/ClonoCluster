@@ -1,7 +1,4 @@
-[![codecov](https://codecov.io/gh/leeprichman/BarCluster/branch/main/graph/badge.svg?token=GBJDQCGAWZ)](https://codecov.io/gh/leeprichman/BarCluster)
-
-**Docker badge goes here**
-
+[![codecov](https://codecov.io/gh/leeprichman/BarCluster/branch/main/graph/badge.svg?token=GBJDQCGAWZ)](https://codecov.io/gh/leeprichman/BarCluster)![](https://img.shields.io/docker/pulls/leeprichman/barcluster)
 # BarCluster
 
 ```
