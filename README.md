@@ -2,18 +2,20 @@
 
 **Docker badge goes here**
 
-```
-
-######                 #####                                           
-#     #   ##   #####  #       #      #    #  ####  ##### ###### #####  
-#     #  #  #  #    # #       #      #    # #        #   #      #    #
-######  #    # #    # #       #      #    #  ####    #   #####  #    #
-#     # ###### #####  #       #      #    #      #   #   #      #####  
-#     # #    # #   #  #       #      #    # #    #   #   #      #   #  
-######  #    # #    #  #####  ######  ####   ####    #   ###### #    #     
+# BarCluster
 
 ```
-**BarCluster:** *Lineage barcodes as ground truth clusters in single cell RNA sequencing*
+
+    ######                 #####                                           
+    #     #   ##   #####  #       #      #    #  ####  ##### ###### #####  
+    #     #  #  #  #    # #       #      #    # #        #   #      #    #
+    ######  #    # #    # #       #      #    #  ####    #   #####  #    #
+    #     # ###### #####  #       #      #    #      #   #   #      #####  
+    #     # #    # #   #  #       #      #    # #    #   #   #      #   #  
+    ######  #    # #    #  #####  ######  ####   ####    #   ###### #    #     
+
+```
+*Lineage barcodes as ground truth clusters in single cell RNA sequencing*
 
 ![](https://github.com/leeprichman/BarCluster/blob/main/readme_fig.png)
 
@@ -23,7 +25,7 @@ Welcome to BarCluster. To get started, you will need:
 
   2. A table of unique cell IDs and their assigned barcodes
 
-You may also use sample data and a worked example demonstrated in the [tutorial](https://github.com/leeprichman/Barcluster/Tutorial.html). If you are looking for the analysis and raw data from our 2022 paper, check out [this repo](https://github.com/leeprichman/BarCluster_paper).
+You may also use sample data and a worked example demonstrated in the [tutorial](https://github.com/leeprichman/BarCluster/blob/main/Tutorial.html). If you are looking for the analysis and raw data from our 2022 paper, check out [this repo](https://github.com/leeprichman/BarCluster_paper).
 
 ## Dependencies
 
@@ -36,11 +38,9 @@ You may also use sample data and a worked example demonstrated in the [tutorial]
 BarCluster is easily installed with the help of the `devtools` package:
 
 ```
-
 install.packages("devtools")
 
 devtools::install_github("leeprichman/BarCluster")
-
 ```
 
 ## Docker
@@ -49,11 +49,11 @@ BarCluster is also availble to use within a prebuilt docker image:
 
 ```
 # pull the docker image
-docker pull leeprichman/BarCluster
+docker pull leeprichman/barcluster
 
 # launch a container
 
-cID=$(docker run -it -d leeprichman/BarCluster /bin/bash)
+cID=$(docker run -it -d leeprichman/barcluster /bin/bash)
 
 # move any desired files onto the container
 
@@ -69,7 +69,7 @@ R
 
 ```
 
-Now you may follow the [tutorial](https://github.com/leeprichman/Barcluster/Tutorial.html) or walkthrough below. At the end of the analysis you may recover output and shut down the container with:
+Now you may follow the [tutorial](https://github.com/leeprichman/BarCluster/blob/main/Tutorial.html) or walkthrough below. At the end of the analysis you may recover output and shut down the container with:
 
 ```
 docker cp $cID:/myoutput.txt ~/myagdockeroutput.txt
@@ -110,7 +110,7 @@ data.table::fwrite(cm, "mycountmatrix.tsv", sep = "\t")
 
 #### Barcluster
 
-For a worked example using provided sample data, check out the [tutorial](https://github.com/leeprichman/Barcluster/Tutorial.html).
+For a worked example using provided sample data, check out the [tutorial](https://github.com/leeprichman/BarCluster/blob/main/Tutorial.html).
 
 The first step is to generate our PCA matrix:
 
@@ -199,7 +199,7 @@ ggplot(umap, aes(x = UMAP_1, UMAP_2)) +
 
 #### Other functions
 
-Check out the [tutorial](https://github.com/leeprichman/Barcluster/Tutorial.html) for:
+Check out the [tutorial](https://github.com/leeprichman/BarCluster/blob/main/Tutorial.html) for:
 
   * Cluster number analysis to choose alpha values
 
@@ -218,9 +218,7 @@ Check out the [tutorial](https://github.com/leeprichman/Barcluster/Tutorial.html
 BarCluster is supported by unit testing with `testthat` and [codecov.io](about.codecov.io). To test the package after install:
 
 ```
-
 testthat::test_package("BarCluster")
-
 ```
 
 ## Citation

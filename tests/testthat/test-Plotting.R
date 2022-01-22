@@ -13,7 +13,7 @@ test_that("Plot alluvia", {
   # testthat::expect_equal(pdigest,
   # "1e862583de4d4ee36e82124a57b37a7a")
 
-  testthat::expect_equal(class(p), c("gg", "ggplot"))
+  testthat::expect_equal(class(p), "list")
 
 })
 
