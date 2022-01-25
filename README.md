@@ -227,3 +227,7 @@ testthat::test_package("BarCluster")
   * Wagner and Klein "Lineage tracing meets single-cell omics: opportunities and challenges" *Nature Reviews Genetics* 2020 [link](https://www.nature.com/articles/s41576-020-0223-2)
 
   * Goyal *et al.* “Cell Type Determination for Cardiac Differentiation Occurs Soon after Seeding of Human Induced Pluripotent Stem Cells.” *bioRxiv* 2021 [link](https://doi.org/10.1101/2021.08.08.455532)
+
+## Contact
+
+Open an issue on this GitHub repository, contact @leeprichman, @arjunrajlaboratory, or email [myself](leeprichman@gmail.com) or [Dr. Arjun Raj](arjunrajlaboratory@gmail.com).
