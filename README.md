@@ -22,7 +22,7 @@ Welcome to BarCluster. To get started, you will need:
 
   2. A table of unique cell IDs and their assigned barcodes
 
-You may also use sample data and a worked example demonstrated in the [tutorial](https://github.com/leeprichman/BarCluster/blob/main/Tutorial.html). If you are looking for the analysis and raw data from our 2022 paper, check out [this repo](https://github.com/leeprichman/BarCluster_paper).
+You may also use sample data and a worked example demonstrated in the [tutorial](https://htmlpreview.github.io/?https://github.com/leeprichman/BarCluster/blob/main/Tutorial.html). If you are looking for the analysis and raw data from our 2022 paper, check out [this repo](https://github.com/leeprichman/BarCluster_paper).
 
 ## Dependencies
 
@@ -66,7 +66,7 @@ R
 
 ```
 
-Now you may follow the [tutorial](https://github.com/leeprichman/BarCluster/blob/main/Tutorial.html) or walkthrough below. At the end of the analysis you may recover output and shut down the container with:
+Now you may follow the [tutorial](https://htmlpreview.github.io/?https://github.com/leeprichman/BarCluster/blob/main/Tutorial.html) or walkthrough below. At the end of the analysis you may recover output and shut down the container with:
 
 ```
 docker cp $cID:/myoutput.txt ~/myagdockeroutput.txt
@@ -107,7 +107,7 @@ data.table::fwrite(cm, "mycountmatrix.tsv", sep = "\t")
 
 #### Barcluster
 
-For a worked example using provided sample data, check out the [tutorial](https://github.com/leeprichman/BarCluster/blob/main/Tutorial.html).
+For a worked example using provided sample data, check out the [tutorial](https://htmlpreview.github.io/?https://github.com/leeprichman/BarCluster/blob/main/Tutorial.html).
 
 The first step is to generate our PCA matrix:
 
@@ -196,7 +196,7 @@ ggplot(umap, aes(x = UMAP_1, UMAP_2)) +
 
 #### Other functions
 
-Check out the [tutorial](https://github.com/leeprichman/BarCluster/blob/main/Tutorial.html) for:
+Check out the [tutorial](https://htmlpreview.github.io/?https://github.com/leeprichman/BarCluster/blob/main/Tutorial.html) for:
 
   * Cluster number analysis to choose alpha values
 
