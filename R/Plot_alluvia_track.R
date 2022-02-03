@@ -71,7 +71,9 @@ Plot_alluvia_track <- function(dl,
 
     }) %>% data.table::rbindlist()
 
-    nt[, label := paste("Alpha ", alpha, ":\n", Group, sep = "")]
+    #nt[, label := paste("Alpha ", alpha, ":\n", Group, sep = "")]
+
+    nt[, label := Group]
 
     nt[, y := mean(c(ymax, ymin)), by = 1:nrow(nt)]
 
