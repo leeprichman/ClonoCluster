@@ -230,4 +230,4 @@ testthat::test_package("BarCluster")
 
 ## Contact
 
-Open an issue on this GitHub repository, contact @leeprichman, @arjunrajlaboratory, or email [myself](leeprichman@gmail.com) or [Dr. Arjun Raj](arjunrajlaboratory@gmail.com).
+Open an issue on this GitHub repository, contact [@leeprichman](https://github.com/leeprichman), [@arjunrajlab](https://github.com/arjunrajlab), or email [Lee Richman](leeprichman@gmail.com) or [Dr. Arjun Raj](arjunrajlaboratory@gmail.com).
