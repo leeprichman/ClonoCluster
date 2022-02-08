@@ -33,7 +33,7 @@ Plot_alluvia <- function(dl,
                         label_size = 2,
                         ltype = "label",
                         reverse = TRUE,
-                        cols = BarCluster::c25){
+                        cols = ClonoCluster::c25){
 
     dt <- dl %>% data.table::copy() %>% .[, .SD, .SDcols = c("rn", "Group", "alpha")]
 

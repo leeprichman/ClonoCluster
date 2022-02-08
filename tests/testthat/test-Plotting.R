@@ -1,6 +1,6 @@
 test_that("Plot alluvia", {
 
-  to <- file.path(tdir, "test_barcluster_output.tsv") %>% data.table::fread()
+  to <- file.path(tdir, "test_clonocluster_output.tsv") %>% data.table::fread()
 
   p <- Plot_alluvia(to[alpha < 1], bt, ltype = "text")
 
@@ -19,7 +19,7 @@ test_that("Plot alluvia", {
 
 test_that("Plot alluvia track", {
 
-  to <- file.path(tdir, "test_barcluster_output.tsv") %>% data.table::fread()
+  to <- file.path(tdir, "test_clonocluster_output.tsv") %>% data.table::fread()
 
   p <- Plot_alluvia_track(to[alpha < 1],
               ids = list(bt[Barcode == "C9", rn],
@@ -41,7 +41,7 @@ test_that("Plot alluvia track", {
 
 test_that("Plot alluvia counts", {
 
-  to <- file.path(tdir, "test_barcluster_output.tsv") %>% data.table::fread()
+  to <- file.path(tdir, "test_clonocluster_output.tsv") %>% data.table::fread()
 
   p <- Plot_alluvia_counts(to[alpha < 1],
               counts = cm[, "ACTA2"] %>% as.matrix,

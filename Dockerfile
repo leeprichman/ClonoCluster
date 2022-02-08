@@ -1,4 +1,4 @@
-# docker build . -t leeprichman/barcluster
+# docker build . -t leeprichman/clonocluster
 FROM r-base:latest
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -37,10 +37,10 @@ RUN Rscript --vanilla -e \
     'install.packages(c("magrittr", "testthat", "Seurat", "data.table", "devtools"), repos = "http://cran.us.r-project.org")'
 
 WORKDIR /root
-RUN mkdir BarCluster
-COPY . ./BarCluster
+RUN mkdir ClonoCluster
+COPY . ./ClonoCluster
 
 RUN Rscript --vanilla -e \
-    'devtools::install("BarCluster", dependencies = TRUE)'
+    'devtools::install("ClonoCluster", dependencies = TRUE)'
 
 CMD ["bash"]

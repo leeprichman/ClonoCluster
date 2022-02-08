@@ -5,7 +5,7 @@ test_that("Seurat Find Markers", {
 
   so <- CreateSeuratObject(counts = gt)
 
-  to <- file.path(tdir, "test_barcluster_output.tsv") %>% data.table::fread()
+  to <- file.path(tdir, "test_clonocluster_output.tsv") %>% data.table::fread()
 
   marks <- FindAllMarkers_Seurat(so, clust = to[alpha < 1])
 
@@ -20,7 +20,7 @@ test_that("Seurat Find Markers", {
 
 test_that("Find_Markers_ROC", {
 
-  to <- file.path(tdir, "test_barcluster_output.tsv") %>% data.table::fread()
+  to <- file.path(tdir, "test_clonocluster_output.tsv") %>% data.table::fread()
 
   marks <- Find_Markers_ROC(to, cm)
 

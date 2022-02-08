@@ -1,13 +1,13 @@
 library(data.table)
 library(magrittr)
 library(Seurat)
-library(BarCluster)
+library(ClonoCluster)
 library(ggplot2)
 library(pheatmap)
 library(cowplot)
 
-# get the location of the sample data installed with barcluster
-dir <- system.file(package = "BarCluster") %>% file.path(., "extdata")
+# get the location of the sample data installed with ClonoCluster
+dir <- system.file(package = "ClonoCluster") %>% file.path(., "extdata")
 
 # count matrix file
 cm <- file.path(dir, "YG1_sample_genes.txt") %>% data.table::fread() %>% tdt %>% dt2m
@@ -21,7 +21,7 @@ pca <- irlba_wrap(cm, npc = 25)
 als <- seq(0, 1, by = 0.1)
 
 # return the cluster assignments for range of alphas
-clust <- barcluster(pca, bt, alpha = als, beta = 0.1, res = 1.5)
+clust <- ClonoCluster(pca, bt, alpha = als, beta = 0.1, res = 1.5)
 
 wl <- bt[, .N, by = "Barcode"] %>% .[order(-N), Barcode[1:10]]
 

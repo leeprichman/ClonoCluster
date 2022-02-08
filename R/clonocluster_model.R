@@ -1,5 +1,5 @@
-## ---- barcluster_model
-#' Return the barcluster network graph for clustering.
+## ---- clonocluster_model
+#' Return the clonocluster network graph for clustering.
 #'
 #' @param alpha Numeric. Between zero and one, with zero representing complete transcriptome and 1 representing complete barcode graphs.
 #' @param beta Numeric. Exponent on alpha to adjust curve sloping. Default is 0.1.
@@ -8,9 +8,9 @@
 #'
 #' @return A sparse matrix of class `dgCMatrix` suitable for `Seurat:::RunModularityClustering`.
 #'
-#' @export barcluster_model
+#' @export clonocluster_model
 #' @md
-barcluster_model <- function(alpha, beta = 0.1, m, nm){
+clonocluster_model <- function(alpha, beta = 0.1, m, nm){
 
   nm <- nm[rownames(m), colnames(m)]
 

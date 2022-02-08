@@ -1,5 +1,5 @@
 ---
-title: "BarCluster Tutorial"
+title: "ClonoCluster Tutorial"
 author: "Lee Richman"
 date: "01/11/2022"
 output: html_document
@@ -12,7 +12,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(magrittr)
-library(BarCluster)
+library(ClonoCluster)
 library(data.table)
 library(Seurat)
 library(ggplot2)
@@ -23,7 +23,7 @@ library(cowplot)
 
 # Walkthrough
 
-Welcome to BarCluster. This RMarkDown file is a tutorial using sample data to generate hybrid clusters from lineage barcoded single cell sequencing data. In the naive clustering setting, the absence of known "ground truth" cell types makes the significance of clusters uncertain. Using BarCluster will better align clusters with the ground truth represented by lineage barcodes. We will:
+Welcome to ClonoCluster. This RMarkDown file is a tutorial using sample data to generate hybrid clusters from lineage barcoded single cell sequencing data. In the naive clustering setting, the absence of known "ground truth" cell types makes the significance of clusters uncertain. Using ClonoCluster will better align clusters with the ground truth represented by lineage barcodes. We will:
 
   1. [Read in our data](#p1) (count matrix and barcode assignments).
 
@@ -55,13 +55,13 @@ Load required packages, get our tutorial data files:
 library(data.table)
 library(magrittr)
 library(Seurat)
-library(BarCluster)
+library(ClonoCluster)
 library(ggplot2)
 library(pheatmap)
 library(cowplot)
 
-# get the location of the sample data installed with barcluster
-dir <- system.file(package = "BarCluster") %>% file.path(., "extdata")
+# get the location of the sample data installed with ClonoCluster
+dir <- system.file(package = "ClonoCluster") %>% file.path(., "extdata")
 
 # count matrix file
 cm <- file.path(dir, "YG1_sample_genes.txt")
@@ -89,7 +89,7 @@ cm[1:5,1:5]
 
 ```
 
-Everything read in correctly but the count matrix is formatted with cells as columns (a common output format). BarCluster expects cells as rows. No problem, I've included the functions `tdt` and `dt2m` in BarCluster to reformat the data.table and turn it into a matrix, respectively.
+Everything read in correctly but the count matrix is formatted with cells as columns (a common output format). ClonoCluster expects cells as rows. No problem, I've included the functions `tdt` and `dt2m` in ClonoCluster to reformat the data.table and turn it into a matrix, respectively.
 
 ```{r transpose}
 
@@ -125,35 +125,35 @@ The steps to perform hybrid clustering are:
 
   2. Generate size normalized barcode graph
 
-  3. Integrate the two with the BarCluster model
+  3. Integrate the two with the ClonoCluster model
 
   4. Repeat for many values of alpha to determine max alpha with tolerable cluster numbers.
 
-Luckily, this is all executed with a single function whose inputs are the barcode table and the PCA we just made. The `barcluster` function does all this for one or more alpha values. The `beta` parameter will affect how each step in alpha affects the output, we are using 0.1 here, but feel free to experiment. The `res` argument is passed to the `Seurat` implementation of the Louvain algorithm. It will affect the number of clusters at low alpha, but at high alpha the determining factor is the number of barcodes in the sample. I suggest you choose a value for resolution that gives you a number of manageable clusters at alpha == 0, or simply the same value as whatever initial `Seurat` analysis you have performed on the data.
+Luckily, this is all executed with a single function whose inputs are the barcode table and the PCA we just made. The `clonocluster` function does all this for one or more alpha values. The `beta` parameter will affect how each step in alpha affects the output, we are using 0.1 here, but feel free to experiment. The `res` argument is passed to the `Seurat` implementation of the Louvain algorithm. It will affect the number of clusters at low alpha, but at high alpha the determining factor is the number of barcodes in the sample. I suggest you choose a value for resolution that gives you a number of manageable clusters at alpha == 0, or simply the same value as whatever initial `Seurat` analysis you have performed on the data.
 
-```{r barclusterinc, eval = FALSE}
-
-# lets get our range of alpha values
-
-als <- seq(0, 1, by = 0.1)
-
-# return the cluster assignments for range of alphas
-clust <- barcluster(pca, bt, alpha = als, beta = 0.1, res = 1.5)
-
-```
-
-```{r barclusternotinc, include = FALSE}
+```{r ClonoClusterinc, eval = FALSE}
 
 # lets get our range of alpha values
 
 als <- seq(0, 1, by = 0.1)
 
 # return the cluster assignments for range of alphas
-clust <- barcluster(pca, bt, alpha = als, beta = 0.1, res = 1.5)
+clust <- clonocluster(pca, bt, alpha = als, beta = 0.1, res = 1.5)
 
 ```
 
-```{r barclusternotinc2}
+```{r ClonoClusternotinc, include = FALSE}
+
+# lets get our range of alpha values
+
+als <- seq(0, 1, by = 0.1)
+
+# return the cluster assignments for range of alphas
+clust <- clonocluster(pca, bt, alpha = als, beta = 0.1, res = 1.5)
+
+```
+
+```{r ClonoClusternotinc2}
 
 # lets take a peak at the output cluster assignments
 head(clust)
@@ -258,7 +258,7 @@ p <- Plot_alluvia(clust[alpha %in% notable_alphas], # subset table on these alph
                   ylab = "# of cells",
                   border_size = 1, # border around the nodes
                   label_nodes = FALSE, # labels nodes but hard to viz here
-                  cols = BarCluster::c25 # colors of nodes and ribbons
+                  cols = ClonoCluster::c25 # colors of nodes and ribbons
                   )
 
 # change the subtitle of the second plot because we aren't coloring by barcodes
@@ -302,7 +302,7 @@ If you want to use the Seurat FindAllMarkers implementation (which may be faster
 ```{r seuratmark, eval = FALSE}
 
 auc_all <- FindAllMarkers_Seurat(so, # seurat object
-                                 clust, # barcluster function output
+                                 clust, # ClonoCluster function output
                                 test.use = "roc") # if you let this default you will get wilcox.tests
 
 ```
@@ -488,7 +488,7 @@ ggplot(topmarkers, aes(x = as.factor(alpha), y = auc)) +
 
 ```
 
-Overall marker fidelity is pretty much intact across alpha values. This is not always the case, as demonstrated in [our analysis](link) of [Jiang *et al. biorXiv* (2021)](https://www.biorxiv.org/content/10.1101/2021.08.08.455532v1). If there is a significant loss of fidelity, BarClusters may not be useful for identifying meaningful cluster markers and this may suggest that your system has largely extrinsic determinants of cell fate. It may be worth continuing the analysis however, as you may identify a rare subset of cells that form their own cluster at high alpha that represent a state-fate correlation.
+Overall marker fidelity is pretty much intact across alpha values. This is not always the case, as demonstrated in [our analysis](link) of [Jiang *et al. biorXiv* (2021)](https://www.biorxiv.org/content/10.1101/2021.08.08.455532v1). If there is a significant loss of fidelity, ClonoClusters may not be useful for identifying meaningful cluster markers and this may suggest that your system has largely extrinsic determinants of cell fate. It may be worth continuing the analysis however, as you may identify a rare subset of cells that form their own cluster at high alpha that represent a state-fate correlation.
 
 Now let's heatmap the maximum fidelity of all top cluster markers over alpha.
 
@@ -789,4 +789,4 @@ You can see how the transcriptome only marker expression is more spread out on t
 
 ## Conclusion
 
-Thank you for using the BarCluster tutorial! We generated our hybrid clusters, chose alpha values for analysis, visualized reorganization, identified markers, and modified the UMAP visualization to better reflect the incorporation of lineage barcode information. For more information, check out the package [ReadMe](https://github.com/leeprichman/BarCluster) and [our paper.](link)
+Thank you for using the ClonoCluster tutorial! We generated our hybrid clusters, chose alpha values for analysis, visualized reorganization, identified markers, and modified the UMAP visualization to better reflect the incorporation of lineage barcode information. For more information, check out the package [ReadMe](https://github.com/leeprichman/ClonoCluster) and [our paper.](link)

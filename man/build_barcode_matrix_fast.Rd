@@ -12,7 +12,7 @@ build_barcode_matrix_fast(bt, value = NULL)
 \item{value}{Numeric. A value to be used for edge weights within barcodes. Default NULL will use the reciprocal of barcode size.}
 }
 \value{
-A sparse matrix of class \code{dgCMatrix} suitable for \code{barcluster_model} or \code{Seurat::FindClusters}.
+A sparse matrix of class \code{dgCMatrix} suitable for \code{clonocluster_model} or \code{Seurat::FindClusters}.
 }
 \description{
 Build a sparse matrix representing the barcode graph.

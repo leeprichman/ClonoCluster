@@ -1,7 +1,7 @@
-## ---- barcluster
+## ---- clonocluster
 #' Return hybrid clusters for a range of alpha values.
 #'
-#' @param irl Matrix. Principal components matrix, output from `BarCluster::irlba_wrap`.
+#' @param irl Matrix. Principal components matrix, output from `clonocluster::irlba_wrap`.
 #' @param bt Data table. Barcode table of two columns cell IDs ("rn") and barcodes ("Barcode").
 #' @param alpha Numeric. Alpha parameter or vector of values to iterate over. Ranges from 0 to 1. A value of zero reflects only transcriptome edges, a value of one reflects only barcodes.
 #' @param beta Numeric. Exponent on alpha to adjust curve sloping. Default is 0.1.
@@ -30,9 +30,9 @@
 #'
 #' @return A long format data table with four columns, cell ID ("rn"), alpha value, beta value, and cluster assignment ("Group").
 #'
-#' @export barcluster
+#' @export clonocluster
 #' @md
-barcluster <- function(irl, bt, alpha = c(0, 0.5, 1), beta = 0.1, res = 1, method = "fast", ...){
+clonocluster <- function(irl, bt, alpha = c(0, 0.5, 1), beta = 0.1, res = 1, method = "fast", ...){
 
   if (method == "fast") nm <- build_barcode_matrix_fast(bt)
 
@@ -54,7 +54,7 @@ barcluster <- function(irl, bt, alpha = c(0, 0.5, 1), beta = 0.1, res = 1, metho
   dl <- lapply(alpha, function(alpha){
 
     # this internal function will make sure m and nm are in the same order
-    mm2 <- barcluster_model(alpha = alpha, beta = beta_val, m = m, nm = nm)
+    mm2 <- clonocluster_model(alpha = alpha, beta = beta_val, m = m, nm = nm)
 
     ids_b <- Seurat:::RunModularityClustering(SNN = mm2, resolution = res, random.seed = 42, ...)
 

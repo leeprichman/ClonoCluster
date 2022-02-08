@@ -16,14 +16,14 @@ Plot_alluvia_track(
   label_nodes = TRUE,
   label_size = 2,
   ltype = "text",
-  cols = BarCluster::cw_colors,
+  cols = ClonoCluster::cw_colors,
   alluvia_cols = cols,
   col2 = "gray100",
   orientation = "bottom"
 )
 }
 \arguments{
-\item{dl}{A data table, with three columns, c("rn", "Group", "alpha"), from \code{barcluster}.}
+\item{dl}{A data table, with three columns, c("rn", "Group", "alpha"), from \code{clonocluster}.}
 
 \item{ids}{List. A list of character vectors containing rownames in dl (cellIDs) for each group to be tracked.}
 

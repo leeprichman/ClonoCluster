@@ -1,28 +1,28 @@
-[![codecov](https://codecov.io/gh/leeprichman/BarCluster/branch/main/graph/badge.svg?token=GBJDQCGAWZ)](https://codecov.io/gh/leeprichman/BarCluster)![](https://img.shields.io/docker/pulls/leeprichman/barcluster)
-# BarCluster
+[![codecov](https://codecov.io/gh/leeprichman/ClonoCluster/branch/main/graph/badge.svg?token=GBJDQCGAWZ)](https://codecov.io/gh/leeprichman/ClonoCluster)![](https://img.shields.io/docker/pulls/leeprichman/clonocluster)
+# ClonoCluster
 
 ```
 
-    ######                 #####                                           
-    #     #   ##   #####  #       #      #    #  ####  ##### ###### #####  
-    #     #  #  #  #    # #       #      #    # #        #   #      #    #
-    ######  #    # #    # #       #      #    #  ####    #   #####  #    #
-    #     # ###### #####  #       #      #    #      #   #   #      #####  
-    #     # #    # #   #  #       #      #    # #    #   #   #      #   #  
-    ######  #    # #    #  #####  ######  ####   ####    #   ###### #    #     
+#####                               #####                                           
+#       #       ####  #    #  ####  #       #      #    #  ####  ##### ###### #####  
+#       #      #    # ##   # #    # #       #      #    # #        #   #      #    #
+#       #      #    # # #  # #    # #       #      #    #  ####    #   #####  #    #
+#       #      #    # #  # # #    # #       #      #    #      #   #   #      #####  
+#       #      #    # #   ## #    # #       #      #    #      #   #   #      #   #  
+#####   ######  ####  #    #  ####   #####  ######  ####   ####    #   ###### #    #
 
 ```
-*Lineage barcodes as ground truth clusters in single cell RNA sequencing*
+*a method for using clonal origin to inform transcriptome clustering*
 
-![](https://github.com/leeprichman/BarCluster/blob/main/readme_fig.png)
+![](https://github.com/leeprichman/ClonoCluster/blob/main/readme_fig.png)
 
-Welcome to BarCluster. To get started, you will need:
+Welcome to ClonoCluster. To get started, you will need:
 
   1. A normalized or scaled count matrix of your barcoded cells
 
   2. A table of unique cell IDs and their assigned barcodes
 
-You may also use sample data and a worked example demonstrated in the [tutorial](https://htmlpreview.github.io/?https://github.com/leeprichman/BarCluster/blob/main/Tutorial.html). If you are looking for the analysis and raw data from our 2022 paper, check out [this repo](https://github.com/leeprichman/BarCluster_paper).
+You may also use sample data and a worked example demonstrated in the [tutorial](https://htmlpreview.github.io/?https://github.com/leeprichman/ClonoCluster/blob/main/Tutorial.html). If you are looking for the analysis and raw data from our 2022 paper, check out [this repo](https://github.com/leeprichman/ClonoCluster_paper).
 
 ## Dependencies
 
@@ -32,25 +32,25 @@ You may also use sample data and a worked example demonstrated in the [tutorial]
 
 ## Installation
 
-BarCluster is easily installed with the help of the `devtools` package:
+ClonoCluster is easily installed with the help of the `devtools` package:
 
 ```
 install.packages("devtools")
 
-devtools::install_github("leeprichman/BarCluster")
+devtools::install_github("leeprichman/ClonoCluster")
 ```
 
 ## Docker
 
-BarCluster is also availble to use within a prebuilt docker image:
+ClonoCluster is also availble to use within a prebuilt docker image:
 
 ```
 # pull the docker image
-docker pull leeprichman/barcluster
+docker pull leeprichman/clonocluster
 
 # launch a container
 
-cID=$(docker run -it -d leeprichman/barcluster /bin/bash)
+cID=$(docker run -it -d leeprichman/clonocluster /bin/bash)
 
 # move any desired files onto the container
 
@@ -66,7 +66,7 @@ R
 
 ```
 
-Now you may follow the [tutorial](https://htmlpreview.github.io/?https://github.com/leeprichman/BarCluster/blob/main/Tutorial.html) or walkthrough below. At the end of the analysis you may recover output and shut down the container with:
+Now you may follow the [tutorial](https://htmlpreview.github.io/?https://github.com/leeprichman/ClonoCluster/blob/main/Tutorial.html) or walkthrough below. At the end of the analysis you may recover output and shut down the container with:
 
 ```
 docker cp $cID:/myoutput.txt ~/myagdockeroutput.txt
@@ -105,16 +105,16 @@ data.table::fwrite(cm, "mycountmatrix.tsv", sep = "\t")
 
 **N.B.:** *Make sure that cell IDs present in the barcode table are the only ones present in the count matrix and vice versa, otherwise you will get errors!*
 
-#### Barcluster
+#### ClonoCluster
 
-For a worked example using provided sample data, check out the [tutorial](https://htmlpreview.github.io/?https://github.com/leeprichman/BarCluster/blob/main/Tutorial.html).
+For a worked example using provided sample data, check out the [tutorial](https://htmlpreview.github.io/?https://github.com/leeprichman/ClonoCluster/blob/main/Tutorial.html).
 
 The first step is to generate our PCA matrix:
 
 ```
 library(magrittr)
 library(data.table)
-library(BarCluster)
+library(ClonoCluster)
 
 cm <- data.table::fread("mycountmatrix.tsv")
 
@@ -127,14 +127,14 @@ pca <- irlba_wrap(cm, npc = 25)
 
 ```
 
-Now read in barcodes and BarCluster!
+Now read in barcodes and ClonoCluster!
 
 ```
 # two column table, "rn" (cell ID) and "Barcode"
 bt <- data.table::fread("mybarcodetable.tsv")
 
 # return the cluster assignments for range of alphas
-clust <- barcluster(pca, bt, alpha = seq(0, 1, by = 0.1), beta = 0.1, res = 1)
+clust <- clonocluster(pca, bt, alpha = seq(0, 1, by = 0.1), beta = 0.1, res = 1)
 
 ```
 
@@ -164,7 +164,7 @@ Plot_alluvia(clust[rn %chin% wl], # subset on cell IDs
 
 This is a sample of what this looks like for the top 10 barcodes in the tutorial sample data:
 
-![](https://github.com/leeprichman/BarCluster/blob/main/sankey_sample.png)
+![](https://github.com/leeprichman/ClonoCluster/blob/main/sankey_sample.png)
 
 #### UMAP and Warp Factor
 
@@ -192,11 +192,11 @@ ggplot(umap, aes(x = UMAP_1, UMAP_2)) +
 
 ```
 
-![](https://github.com/leeprichman/BarCluster/blob/main/sample_warps.png)
+![](https://github.com/leeprichman/ClonoCluster/blob/main/sample_warps.png)
 
 #### Other functions
 
-Check out the [tutorial](https://htmlpreview.github.io/?https://github.com/leeprichman/BarCluster/blob/main/Tutorial.html) for:
+Check out the [tutorial](https://htmlpreview.github.io/?https://github.com/leeprichman/ClonoCluster/blob/main/Tutorial.html) for:
 
   * Cluster number analysis to choose alpha values
 
@@ -212,10 +212,10 @@ Check out the [tutorial](https://htmlpreview.github.io/?https://github.com/leepr
 
 ## Testing
 
-BarCluster is supported by unit testing with `testthat` and [codecov.io](about.codecov.io). To test the package after install:
+ClonoCluster is supported by unit testing with `testthat` and [codecov.io](about.codecov.io). To test the package after install:
 
 ```
-testthat::test_package("BarCluster")
+testthat::test_package("ClonoCluster")
 ```
 
 ## Citation

@@ -1,4 +1,4 @@
-test_that("barcluster_model", {
+test_that("clonocluster_model", {
 
   pca <- readRDS(file.path(tdir, "pca.RDS"))
 
@@ -13,7 +13,7 @@ test_that("barcluster_model", {
 
   rm("neighbor.graphs")
 
-  mm2 <- barcluster_model(alpha = 0.5, beta = 1, m, tnm)
+  mm2 <- clonocluster_model(alpha = 0.5, beta = 1, m, tnm)
 
   testthat::expect_equal(mm2, readRDS(file.path(tdir, "mm2.RDS")))
 

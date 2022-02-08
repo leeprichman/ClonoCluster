@@ -7,7 +7,7 @@
 engage_warp(pca, bt, s, ...)
 }
 \arguments{
-\item{pca}{Matrix. Principal components matrix, output from \code{BarCluster::irlba_wrap}.}
+\item{pca}{Matrix. Principal components matrix, output from \code{clonocluster::irlba_wrap}.}
 
 \item{bt}{Data table. Barcode table of two columns cell IDs ("rn") and barcodes ("Barcode").}
 

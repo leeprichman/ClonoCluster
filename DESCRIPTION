@@ -1,20 +1,16 @@
-Package: BarCluster
-Title: Lineage barcodes as ground truth clusters in single cell RNA sequencing
+Package: ClonoCluster
+Title: A method for using clonal origin to inform transcriptome clustering
 Version: 0.0.1
 Authors@R:
     c(person(given = c("Lee", "P."),
              family = "Richman",
              role = c("aut", "cre"),
              email = "leepr@upenn.edu"),
-      person(given = c("Yogesh"),
-             family = "Goyal",
-             role = "aut",
-             email = "yogesh.goyal@northwestern.edu"),
       person(given = c("Arjun"),
              family = "Raj",
              role = "aut",
              email = "arjunrajlab@gmail.com"))
-Description: Package to facilitate the integration of barcode assignments with traditional transcriptome based clustering to generate intermediate levels of clustering for analysis.
+Description: Package to facilitate the integration of clonal clusters with traditional transcriptome based clustering to generate intermediate levels of clustering for analysis.
 License: See LICENSE
 Imports:
   magrittr,

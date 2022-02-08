@@ -1,4 +1,4 @@
 library(testthat)
-library(BarCluster)
+library(ClonoCluster)
 
-test_check("BarCluster")
+test_check("ClonoCluster")

@@ -1,11 +1,11 @@
 library(data.table)
 library(magrittr)
 library(Seurat)
-library(BarCluster)
+library(ClonoCluster)
 library(testthat)
 
-# get the location of the sample data installed with barcluster
-dir <- system.file(package = "BarCluster") %>% file.path(., "extdata")
+# get the location of the sample data installed with ClonoCluster
+dir <- system.file(package = "ClonoCluster") %>% file.path(., "extdata")
 
 # count matrix file
 cm <- file.path(dir, "YG1_sample_genes.txt") %>% data.table::fread() %>% .[1:50] %>%

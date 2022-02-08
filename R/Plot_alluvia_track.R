@@ -1,7 +1,7 @@
 ## ---- Plot_alluvia_track
 #' Plot a Sankey Diagram and track a list of cellIDs.
 #'
-#' @param dl A data table, with three columns, c("rn", "Group", "alpha"), from `barcluster`.
+#' @param dl A data table, with three columns, c("rn", "Group", "alpha"), from `clonocluster`.
 #' @param ids List. A list of character vectors containing rownames in dl (cellIDs) for each group to be tracked.
 #' @param cols Character. Vector of colors values of length equal to the number of groups to be tracked, node colors.
 #' @param alluvia_cols Character. Vector of colors values of length equal to the number of groups to be tracked, alluvium colors, default is same as `cols`.
@@ -32,7 +32,7 @@ Plot_alluvia_track <- function(dl,
                         label_nodes = TRUE,
                         label_size = 2,
                         ltype = "text",
-                        cols = BarCluster::cw_colors,
+                        cols = ClonoCluster::cw_colors,
                         alluvia_cols = cols,
                         col2 = "gray100",
                         orientation = "bottom"){

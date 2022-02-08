@@ -4,7 +4,7 @@
 #' @param bt Data.table. Columns are "rn" (cell ids) and "Barcode".
 #' @param value Numeric. A value to be used for edge weights within barcodes. Default NULL will use the reciprocal of barcode size.
 #'
-#' @return A sparse matrix of class `dgCMatrix` suitable for `barcluster_model` or `Seurat::FindClusters`.
+#' @return A sparse matrix of class `dgCMatrix` suitable for `clonocluster_model` or `Seurat::FindClusters`.
 #'
 #' @export build_barcode_matrix
 #' @md

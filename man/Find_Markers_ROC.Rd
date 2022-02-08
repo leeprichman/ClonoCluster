@@ -7,7 +7,7 @@
 Find_Markers_ROC(dl, cm, n_threads = 1)
 }
 \arguments{
-\item{dl}{A data.table of cluster assignments, output from \code{barcluster}, with minimum columns c("rn", "Group", "alpha").}
+\item{dl}{A data.table of cluster assignments, output from \code{clonocluster}, with minimum columns c("rn", "Group", "alpha").}
 
 \item{cm}{Matrix. A count matrix.}
 

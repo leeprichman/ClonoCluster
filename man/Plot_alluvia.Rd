@@ -18,7 +18,7 @@ Plot_alluvia(
   label_size = 2,
   ltype = "label",
   reverse = TRUE,
-  cols = BarCluster::c25
+  cols = ClonoCluster::c25
 )
 }
 \arguments{

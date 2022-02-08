@@ -60,7 +60,7 @@ ROCR_wrap <- function(x, y, return_curve = FALSE){
 ## ---- Find_Markers_ROC
 #' Fast AUC calculation wrapper for clusters.
 #'
-#' @param dl A data.table of cluster assignments, output from `barcluster`, with minimum columns c("rn", "Group", "alpha").
+#' @param dl A data.table of cluster assignments, output from `clonocluster`, with minimum columns c("rn", "Group", "alpha").
 #' @param cm Matrix. A count matrix.
 #' @param n_threads Integer. Passed to `mc.cores` for `parallel::mclapply`
 #'
