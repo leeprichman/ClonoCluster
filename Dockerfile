@@ -34,7 +34,10 @@ ENV TERM linux
 
 
 RUN Rscript --vanilla -e \
-    'install.packages(c("magrittr", "testthat", "Seurat", "data.table", "devtools"), repos = "http://cran.us.r-project.org")'
+    'install.packages(c("magrittr", "testthat", "Seurat", "data.table"), repos = "http://cran.us.r-project.org")'
+
+RUN Rscript --vanilla -e \
+    'install.packages(c("devtools"), repos = "http://cran.us.r-project.org")'
 
 WORKDIR /root
 RUN mkdir ClonoCluster
