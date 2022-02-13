@@ -220,7 +220,7 @@ testthat::test_package("ClonoCluster")
 
 ## Citation
 
-[biorxiv link](link)
+Richman *et al.* "ClonoCluster: a method for using clonal origin to inform transcriptome clustering" *biorXiv* 2022 [link](https://www.biorxiv.org/content/10.1101/2022.02.11.480077v1?rss=1)
 
 ## Selected references
 
