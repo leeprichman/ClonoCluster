@@ -789,4 +789,4 @@ You can see how the transcriptome only marker expression is more spread out on t
 
 ## Conclusion
 
-Thank you for using the ClonoCluster tutorial! We generated our hybrid clusters, chose alpha values for analysis, visualized reorganization, identified markers, and modified the UMAP visualization to better reflect the incorporation of lineage barcode information. For more information, check out the package [ReadMe](https://github.com/leeprichman/ClonoCluster) and [our paper.](link)
+Thank you for using the ClonoCluster tutorial! We generated our hybrid clusters, chose alpha values for analysis, visualized reorganization, identified markers, and modified the UMAP visualization to better reflect the incorporation of lineage barcode information. For more information, check out the package [ReadMe](https://github.com/leeprichman/ClonoCluster) and [our paper.](https://www.biorxiv.org/content/10.1101/2022.02.11.480077v1?rss=1)
