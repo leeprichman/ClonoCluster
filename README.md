@@ -1,4 +1,5 @@
-[![codecov](https://codecov.io/gh/leeprichman/ClonoCluster/branch/main/graph/badge.svg?token=GBJDQCGAWZ)](https://codecov.io/gh/leeprichman/ClonoCluster)![](https://img.shields.io/docker/pulls/leeprichman/clonocluster)
+[![codecov](https://codecov.io/gh/leeprichman/ClonoCluster/branch/main/graph/badge.svg?token=GBJDQCGAWZ)](https://codecov.io/gh/leeprichman/ClonoCluster)![](https://img.shields.io/docker/pulls/leeprichman/clonocluster)[![DOI](https://zenodo.org/badge/199330561.svg)](https://zenodo.org/badge/latestdoi/199330561)
+
 # ClonoCluster
 
 ```
