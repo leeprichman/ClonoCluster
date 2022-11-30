@@ -21,7 +21,7 @@ pca <- irlba_wrap(cm, npc = 25)
 als <- seq(0, 1, by = 0.1)
 
 # return the cluster assignments for range of alphas
-clust <- ClonoCluster(pca, bt, alpha = als, beta = 0.1, res = 1.5)
+clust <- clonocluster(pca, bt, alpha = als, beta = 0.1, res = 1.5)
 
 wl <- bt[, .N, by = "Barcode"] %>% .[order(-N), Barcode[1:10]]
 
@@ -40,6 +40,23 @@ p1 <- Plot_alluvia(clust[rn %chin% wl & alpha < 0.6],
                   plot.subtitle = element_blank())
 
 ggsave(plot = p1, "sankey_void.pdf", height = 3, width = 6)
+
+# # for graphical abstract
+# pl <- Plot_alluvia(clust[rn %chin% wl & alpha < 0.6],
+#                   bt[rn %chin% wl],
+#                   label_nodes = FALSE,
+#                   reverse = TRUE,
+#                   border_size = 2,
+#                   col = cw_colors
+#                   )
+#
+#     pl[[2]] <- pl[[2]] +
+#                   theme_void() +
+#                   theme(legend.position = "none",
+#                   plot.title = element_blank(),
+#                   plot.subtitle = element_blank())
+#
+# ggsave(plot = pl[[2]], "~/Downloads/temp.png", height = 3, width = 6)
 
 p2 <- Plot_alluvia(clust[rn %chin% wl],
                   bt[rn %chin% wl],
