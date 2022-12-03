@@ -1,7 +1,7 @@
 ---
-title: "ClonoCluster Tutorial"
+title: "Methods S1: Example protocol for hybrid transcriptome and clonal clustering with ClonoCluster, related to STAR Methods"
 author: "Lee Richman"
-date: "01/11/2022"
+date: "12/03/2022"
 output: html_document
 ---
 
